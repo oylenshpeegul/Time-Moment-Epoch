@@ -2,8 +2,8 @@ package Epochs;
 
 use strict;
 use warnings;
-use Scalar::Util qw(looks_like_number);
 use Math::BigInt lib => 'GMP';
+use Scalar::Util qw(looks_like_number);
 use Time::Moment;
 
 my $SECONDS_PER_DAY = 24 * 60 * 60;
