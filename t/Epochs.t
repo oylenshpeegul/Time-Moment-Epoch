@@ -4,6 +4,8 @@ use warnings;
 use Epochs;
 use Test::Most;
 
+no warnings 'portable';
+
 my @tests = (
 	{
 		sub => 'chrome',
@@ -132,6 +134,7 @@ my @tests = (
 
 for my $t (@tests) {
 	no strict 'refs';
+	no warnings 'uninitialized';
 	my $obs = "Epochs::$t->{sub}"->($t->{num});
 	is $obs, $t->{exp}, "$t->{sub}($t->{num}) => $t->{exp}";
 }
