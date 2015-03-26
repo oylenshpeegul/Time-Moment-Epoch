@@ -27,3 +27,6 @@ would give
 See [epochs](https://github.com/oylenshpeegul/epochs) for a similar
 thing in Go.
 
+## Contributors
+
+[@noppers](https://github.com/noppers) originally worked out how to do the Google Calendar calculation.
