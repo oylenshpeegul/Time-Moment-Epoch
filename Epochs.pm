@@ -24,7 +24,7 @@ sub cocoa {
 }
 
 # Google Calendar time seems to count 32-day months from the day
-# before the Unix epoch.
+# before the Unix epoch. @noppers worked out how to do this.
 sub google_calendar {
 	my $n = shift;
 
@@ -42,7 +42,7 @@ sub google_calendar {
 	# Add the days first...
 	my $u = $t->plus_days($days);
 
-	# ...then the months.
+	# ...then the months...
 	my $v = $u->plus_months($months);
 
 	# ...then the seconds.
