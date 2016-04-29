@@ -24,7 +24,7 @@ would give
 
 **Update:** Now there are functions in the other direction too! For example, running this
 
-```
+```perl
 #!/usr/bin/env perl
 
 use v5.22;
