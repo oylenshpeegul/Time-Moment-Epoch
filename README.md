@@ -43,10 +43,16 @@ gives
 12879041490654321
 ```
 
+## Contributors
+
+[@noppers](https://github.com/noppers) originally worked out how to do the Google Calendar calculation.
+
+## History
+
+This project was first done with [DateTime](http://p3rl.org/DateTime). Then it was refactored to use [Time::Piece](http://p3rl.org/Time::Piece), which is in the standard library. When I found out about [Time::Moment](http://p3rl.org/Time::Moment), I just had to refactor it again. Dependencies be damned-- I like this one the best!
+
+## See Also
 
 See [epochs](https://github.com/oylenshpeegul/epochs) for a similar
 thing in Go.
 
-## Contributors
-
-[@noppers](https://github.com/noppers) originally worked out how to do the Google Calendar calculation.
