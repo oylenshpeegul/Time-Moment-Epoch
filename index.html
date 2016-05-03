@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+	<meta charset="utf-8">
+    <title>Epochs</title>
+    <link rel="stylesheet" type ="text/css" href="default.css" />
+    <link rel="shortcut icon" href="favicon.ico" />
+	<link href='https://fonts.googleapis.com/css?family=Amiri' rel='stylesheet' type='text/css'>
+	<link href='https://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
+  </head>
+  <body>
+    <h1>Epochs</h1>
+    <div class="framed">
+
+	  <h2> So, what does Epochs do?</h2>
+	  
+	  <p>It seems everything has its own idea of what a timestamp
+	  is. For example, I use Firefox most of the time. It keeps track
+	  of all kinds of things that I do. If I look in
+	  its <em>places</em> database</p>
+
+	  <pre>
+$ sqlite3 ~/.mozilla/firefox/xjici1nz.default/places.sqlite
+sqlite> .tables
+moz_anno_attributes  moz_favicons         moz_items_annos    
+moz_annos            moz_historyvisits    moz_keywords       
+moz_bookmarks        moz_hosts            moz_places         
+moz_bookmarks_roots  moz_inputhistory   
+sqlite> .headers on
+sqlite> select * from moz_places;
+id|url|title|rev_host|visit_count|hidden|typed|favicon_id|frecency|last_visit_date|guid|foreign_count
+...
+	  </pre>
+
+	  <p>I can see lots of places I've visited.</p>
+	  
+	  <pre>
+sqlite> select url, last_visit_date from moz_places limit 3;
+url|last_visit_date
+https://www.mozilla.org/en-US/firefox/central/|
+http://www.ubuntu.com/|1461414650785039
+http://wiki.ubuntu.com/|
+	  </pre>
+
+	  <p>One column is called "last_visit_date," but it doesn't look like a
+	  date; it's just a big number. Apparently, I visited
+	  www.ubuntu.com at 1461414650785039. Maybe it's a Unix date. </p>
+	  
+	  <pre>
+$ date -d @1461414650785039
+Wed Sep 19 21:57:19 EST 46312356
+	  </pre>
+
+	  <p>Nope, that's some time after the Sun has exploded. What does
+	  it mean? Well, it turns out that Mozilla time is the same as
+	  Unix time, except it's measured in microseconds instead of
+	  seconds. With this module, we can convert that database entry
+	  into a standard datetime</p>
+
+	  <pre>
+$ perl -MEpochs -E 'say Epochs::mozilla("1461414650785039")'
+2016-04-23T12:30:50.785039Z
+	  </pre>
+
+	  <p>So apparently I visited on April 23rd of this year, not some
+		time in the distant future.</p>
+
+	  <p>Sometimes I use Chromium. It keeps track of all kinds of
+	  things that I do too. If I look in its <em>History</em>
+	  database</p>
+
+	  <pre>
+$ sqlite3 ~/.config/chromium/Default/History
+sqlite> .tables
+downloads             meta                  urls                
+downloads_url_chains  segment_usage         visit_source        
+keyword_search_terms  segments              visits
+sqlite> .headers on
+sqlite> select * from urls;
+id|url|title|visit_count|typed_count|last_visit_time|hidden|favicon_id
+...
+sqlite> select url, last_visit_time from urls limit 3;
+https://github.com/oylenshpeegul/Epochs-perl|13106714670814172
+https://github.com/oylenshpeegul?tab=repositories|13106714667811541
+https://github.com/oylenshpeegul|13106714667342966
+	  </pre>
+
+	  <p>I see I last visited this website at 13106714670814172. When
+	  was that?</p>
+	  
+	  <pre>
+$ date -d @13106714670814172
+Mon Nov 20 13:09:32 EST 415337223
+	  </pre>
+
+	  <p>Again, some crazy time in the future?</p>
+
+	  <pre>
+$ perl -MEpochs -E 'say Epochs::chrome("13106714670814172")'
+2016-05-03T02:04:30.814172Z
+	  </pre>
+	  
+	  <p>No, it was just a little while ago. Chromium measures time in
+	  microseconds also, but instead of starting at 1970, it starts at
+	  1601. But you don't have to remember that because <a href="https://github.com/oylenshpeegul/Epochs-perl">Epochs</a> does.
+	  </p>
+
+	  <h2> Lots of times!</h2>
+
+	  <p>Firefox and Chromium times are just two examples. This module
+	  knows a bunch more (chrome, cocoa, google_calendar, icq, java,
+	  mozilla, ole, symbian, unix, uuid_v1, windows_date,
+	  windows_file). If you know any others, <a href="https://github.com/oylenshpeegul/Epochs-perl">please let me know</a>!</p>
+
+    </div>
+  </body>
+</html>
