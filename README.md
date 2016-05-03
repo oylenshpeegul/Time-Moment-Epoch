@@ -56,3 +56,4 @@ This project was first done with [DateTime](http://p3rl.org/DateTime). Then it w
 See [epochs](https://github.com/oylenshpeegul/epochs) for a similar
 thing in Go.
 
+See [the Epochs gh-page](http://oylenshpeegul.github.io/Epochs-perl/) for motivation.
