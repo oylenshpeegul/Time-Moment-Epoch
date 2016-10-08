@@ -42,23 +42,13 @@ sub google_calendar {
 
 	my $b = Math::BigInt->new($n);
 	my($total_days, $seconds) = $b->bdiv($SECONDS_PER_DAY);
-
-	# A "Google month" has 32 days!
 	my($months, $days) = $total_days->bdiv(32);
 
-	# The "Google epoch" is apparently off by a day.
-	my $t = Time::Moment->from_epoch(-$SECONDS_PER_DAY);
-
-	# Add the days first...
-	my $u = $t->plus_days($days);
-
-	# ...then the months...
-	my $v = $u->plus_months($months);
-
-	# ...then the seconds.
-	my $w = $v->plus_seconds($seconds);
-
-	return $w;
+	Time::Moment
+		  ->from_epoch(-$SECONDS_PER_DAY)
+		  ->plus_days($days)
+		  ->plus_months($months)
+		  ->plus_seconds($seconds);
 }
 sub to_google_calendar {
 	my $tm = shift;
