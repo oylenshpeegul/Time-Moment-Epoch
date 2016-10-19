@@ -3,7 +3,7 @@ package Epochs;
 use v5.10;
 use strict;
 use warnings;
-use Math::BigInt lib => 'GMP';
+use Math::BigInt try => 'GMP';
 use Math::BigFloat;
 use Scalar::Util qw(looks_like_number);
 use Time::Moment;
