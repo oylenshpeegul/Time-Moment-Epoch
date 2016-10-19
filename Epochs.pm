@@ -120,7 +120,7 @@ sub ole {
 	my $num = shift // return;
 
 	my $hex = sprintf "%x", $num;
-	my $d_days = unpack("d", pack("H*", $hex)) or return;
+	my $d_days = unpack('d', pack('H*', $hex)) or return;
 
 	return if $d_days eq '-nan';
 
@@ -131,7 +131,7 @@ sub to_ole {
 
 	my $icq = to_icq($t);
 
-	my $hex = unpack("H*", pack("d", $icq)) or return;
+	my $hex = unpack('H*', pack('d', $icq)) or return;
 
 	return "0x$hex";
 }
