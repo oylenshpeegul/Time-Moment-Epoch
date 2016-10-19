@@ -6,7 +6,8 @@ For example, running this code
 ```perl
 #!/usr/bin/env perl
 
-use v5.20;
+use v5.10;
+use strict;
 use warnings;
 use Epochs;
 
@@ -27,7 +28,8 @@ would give
 ```perl
 #!/usr/bin/env perl
 
-use v5.22;
+use v5.10;
+use strict;
 use warnings;
 use Epochs;
 
