@@ -11,6 +11,40 @@ use Time::Moment;
 my $SECONDS_PER_DAY = 24 * 60 * 60;
 my $NANOSECONDS_PER_DAY = $SECONDS_PER_DAY * 1e9;
 
+=head1 NAME
+
+Epochs
+
+=head1 DESCRIPTION
+
+Convert various epoch times to and from datetimes using L<Time::Moment>.
+
+=head1 SYNOPSIS
+
+    use Epochs;
+
+    say Epochs::unix(1234567890);
+            # 2009-02-13T23:31:30Z
+    say Epochs::to_unix('2009-02-13T23:31:30Z');
+            # 1234567890
+
+    say Epochs::chrome(12879041490654321);
+            # 2009-02-13T23:31:30.654321Z
+    say Epochs::to_chrome('2009-02-13T23:31:30.654321Z');
+            # 12879041490654321
+
+=head1 CONVERSIONS
+
+The following functions convert an epoch of the specified type to a Time::Moment object.
+
+They each have a corresponding C<to_$type> function which accepts a datetime string (in any format accepted by the C<from_string> method of L<Time::Moment>) and returns the corresponding epoch.
+
+=head2 chrome
+
+Chrome time is the number of microseconds since S<1601-01-01>.
+
+=cut
+
 # Chrome time is the number of microseconds since 1601-01-01, which is
 # 11,644,473,600 seconds before the Unix epoch.
 #
@@ -23,6 +57,12 @@ sub to_chrome {
 	_time2epoch($tm, 1_000_000, -11_644_473_600);
 }
 
+=head2 cocoa
+
+Cocoa time is the number of seconds since S<2001-01-01>.
+
+=cut
+
 # Cocoa time is the number of seconds since 2001-01-01, which
 # is 978,307,200 seconds after the Unix epoch.
 sub cocoa {
@@ -33,6 +73,12 @@ sub to_cocoa {
 	my $tm = shift;
 	_time2epoch($tm, 1, 978_307_200);
 }
+
+=head2 google_calendar
+
+Google Calendar time is 32-day months from the day before the Unix epoch.
+
+=cut
 
 # Google Calendar time seems to count 32-day months from the day
 # before the Unix epoch. @noppers worked out how to do this.
@@ -66,6 +112,12 @@ sub to_google_calendar {
 	  +  $tm->second;
 }
 
+=head2 icq
+
+ICQ time is the number of days (with an allowed fractional part) since S<1899-12-30>.
+
+=cut
+
 #  ICQ time is the number of days since 1899-12-30, which is
 #  2,209,161,600 seconds before the Unix epoch. Days can have a
 #  fractional part.
@@ -95,6 +147,12 @@ sub to_icq {
 	$t2->delta_nanoseconds($tm) / $NANOSECONDS_PER_DAY;
 }
 
+=head2 java
+
+Java time is the number of milliseconds since the Unix epoch.
+
+=cut
+
 # Java time is in milliseconds since the Unix epoch.
 sub java {
 	my $num = shift;
@@ -105,6 +163,12 @@ sub to_java {
 	_time2epoch($tm, 1000);
 }
 
+=head2 mozilla
+
+Mozilla time is the number of microseconds since the Unix epoch.
+
+=cut
+
 # Mozilla time is in microseconds since the Unix epoch.
 sub mozilla {
 	my $num = shift;
@@ -114,6 +178,12 @@ sub to_mozilla {
 	my $tm = shift;
 	_time2epoch($tm, 1_000_000);
 }
+
+=head2 ole
+
+OLE time is the number of days since S<1899-12-30>.
+
+=cut
 
 #  OLE time is the number of days since 1899-12-30, which is
 #  2,209,161,600 seconds before the Unix epoch.
@@ -137,6 +207,12 @@ sub to_ole {
 	return "0x$hex";
 }
 
+=head2 symbian
+
+Symbian time is the number of microseconds since the year 0.
+
+=cut
+
 # Symbian time is the number of microseconds since the year 0, which
 # is 62,167,219,200 seconds before the Unix epoch.
 sub symbian {
@@ -148,6 +224,12 @@ sub to_symbian {
 	_time2epoch($tm, 1_000_000, -62_167_219_200);
 }
 
+=head2 unix
+
+Unix time is the number of seconds since S<1970-01-01>.
+
+=cut
+
 # Unix time is the number of seconds since 1970-01-01.
 sub unix {
 	my $num = shift;
@@ -158,6 +240,12 @@ sub to_unix {
 	_time2epoch($tm);
 }
 
+=head2 uuid_v1
+
+UUID version 1 time (RFC 4122) is the number of hectonanoseconds S<(100 ns)> since S<1582-10-15>.
+
+=cut
+
 # UUID version 1 time (RFC 4122) is the number of hectonanoseconds
 # (100 ns) since 1582-10-15, which is 12,219,292,800 seconds before
 # the Unix epoch.
@@ -165,6 +253,12 @@ sub uuid_v1 {
 	my $num = shift;
 	_epoch2time($num, 10_000_000, -12_219_292_800);
 }
+
+=head2 windows_date
+
+Windows date time (e.g., .NET) is the number of hectonanoseconds S<(100 ns)> since S<0001-01-01>.
+
+=cut
 
 # Windows date time (e.g., .NET) is the number of hectonanoseconds
 # (100 ns) since 0001-01-01, which is 62,135,596,800 seconds before
@@ -177,6 +271,12 @@ sub to_windows_date {
 	my $tm = shift;
 	_time2epoch($tm, 10_000_000, -62_135_596_800);
 }
+
+=head2 windows_file
+
+Windows file time (e.g., NTFS) is the number of hectonanoseconds S<(100 ns)> since S<1601-01-01>.
+
+=cut
 
 # Windows file time (e.g., NTFS) is the number of hectonanoseconds
 # (100 ns) since 1601-01-01, which is 11,644,473,600 seconds before
@@ -217,3 +317,15 @@ sub _time2epoch {
 }
 
 1;
+
+__END__
+
+=head1 SEE ALSO
+
+=over
+
+=item L<Time::Moment>
+
+=back
+
+=cut
