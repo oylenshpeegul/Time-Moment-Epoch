@@ -181,17 +181,16 @@ sub to_mozilla {
 
 =head2 ole
 
-OLE time is the number of days since S<1899-12-30>.
+OLE time is the number of days since S<1899-12-30>, packed as a 64-bit little-endian integer.
 
 =cut
 
 #  OLE time is the number of days since 1899-12-30, which is
 #  2,209,161,600 seconds before the Unix epoch.
 sub ole {
-	my $num = shift // return;
+	my $bytes = shift // return;
 
-	my $hex = sprintf "%x", $num;
-	my $d_days = unpack('d', pack('H*', $hex)) or return;
+	my $d_days = unpack('d', $bytes) or return;
 
 	return if $d_days eq '-nan';
 
@@ -202,9 +201,9 @@ sub to_ole {
 
 	my $icq = to_icq($t);
 
-	my $hex = unpack('H*', pack('d', $icq)) or return;
+	my $epoch = pack('d', $icq) or return;
 
-	return "0x$hex";
+	return $epoch;
 }
 
 =head2 symbian
