@@ -252,6 +252,10 @@ sub uuid_v1 {
 	my $num = shift;
 	_epoch2time($num, 10_000_000, -12_219_292_800);
 }
+sub to_uuid_v1 {
+    my $tm = shift;
+    _time2epoch($tm, 10_000_000, -12_219_292_800);
+}
 
 =head2 windows_date
 
