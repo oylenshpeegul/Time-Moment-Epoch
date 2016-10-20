@@ -117,18 +117,18 @@ my @tests = (
 
 	{
 		sub => 'ole',
-		obs => 0xdedddd5d3f76e340,
+		obs => pack('H*', 'dedddd5d3f76e340'),
 		exp => '2009-02-13T23:31:30.000000083Z',
 	},
 	{
 		sub => 'ole',
-		obs => 0x8ad371b4bcd2e340,
+		obs => pack('H*', '8ad371b4bcd2e340'),
 		exp => '2011-02-23T21:31:43.127000061Z',
 	},
 	{
 		sub => 'to_ole',
 		obs => '2011-02-23T21:31:43.127000061Z',
-		exp => '0x8ad371b4bcd2e340',
+		exp => pack('H*', '8ad371b4bcd2e340'),
 	},
 
 	{
