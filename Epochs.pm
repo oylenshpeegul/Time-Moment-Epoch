@@ -181,7 +181,7 @@ sub to_mozilla {
 
 =head2 ole
 
-OLE time is the number of days since S<1899-12-30>, packed as a 64-bit little-endian integer.
+OLE time is the number of days since S<1899-12-30>, packed as a double-precision float in native format.
 
 =cut
 
