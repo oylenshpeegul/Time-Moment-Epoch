@@ -56,7 +56,10 @@ This project was first done with [DateTime](http://p3rl.org/DateTime). Then it w
 See [epochs](https://github.com/oylenshpeegul/epochs) for a similar
 thing in Go.
 
-See [Epoch-elixir](https://github.com/oylenshpeegul/Epochs-elixir) for a similar
+See [Epochs-elixir](https://github.com/oylenshpeegul/Epochs-elixir) for a similar
 thing in Elixir.
+
+See [Epochs-Powershell](https://github.com/oylenshpeegul/Epochs-powershell) for a similar
+thing in Powershell.
 
 See [the Epochs gh-page](http://oylenshpeegul.github.io/Epochs-perl/) for motivation.
