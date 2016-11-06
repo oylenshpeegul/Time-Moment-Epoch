@@ -21,17 +21,17 @@ Convert various epoch times to and from datetimes using L<Time::Moment>.
 
 =head1 SYNOPSIS
 
-    use Epochs;
+	use Epochs;
 
-    say Epochs::unix(1234567890);
-            # 2009-02-13T23:31:30Z
-    say Epochs::to_unix('2009-02-13T23:31:30Z');
-            # 1234567890
+	say Epochs::unix(1234567890);
+			# 2009-02-13T23:31:30Z
+	say Epochs::to_unix('2009-02-13T23:31:30Z');
+			# 1234567890
 
-    say Epochs::chrome(12879041490654321);
-            # 2009-02-13T23:31:30.654321Z
-    say Epochs::to_chrome('2009-02-13T23:31:30.654321Z');
-            # 12879041490654321
+	say Epochs::chrome(12879041490654321);
+			# 2009-02-13T23:31:30.654321Z
+	say Epochs::to_chrome('2009-02-13T23:31:30.654321Z');
+			# 12879041490654321
 
 =head1 CONVERSIONS
 
