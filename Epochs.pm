@@ -41,7 +41,8 @@ They each have a corresponding C<to_$type> function which accepts a datetime str
 
 =head2 apfs
 
-APFS time is the number of nanoseconds since the Unix epoch.
+APFS time is the number of nanoseconds since the Unix epoch. Cf., APFS
+filesystem format (https://blog.cugu.eu/post/apfs/).
 
 =cut
 
