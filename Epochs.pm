@@ -39,6 +39,23 @@ The following functions convert an epoch of the specified type to a Time::Moment
 
 They each have a corresponding C<to_$type> function which accepts a datetime string (in any format accepted by the C<from_string> method of L<Time::Moment>) and returns the corresponding epoch.
 
+=head2 apfs
+
+APFS time is the number of nanoseconds since the Unix epoch.
+
+=cut
+
+# APFS time is in nanoseconds since the Unix epoch.
+sub apfs {
+	my $num = shift;
+	_epoch2time($num, 1_000_000_000);
+}
+sub to_apfs {
+	my $tm = shift;
+	_time2epoch($tm, 1_000_000_000);
+}
+
+
 =head2 chrome
 
 Chrome time is the number of microseconds since S<1601-01-01>.
