@@ -7,6 +7,18 @@ use Test::Most;
 no warnings 'portable';
 
 my @tests = (
+
+	{
+		sub => 'apfs',
+		obs => 1234567890000000000,
+		exp => '2009-02-13T23:31:30Z',
+	},
+	{
+		sub => 'to_apfs',
+		obs => '2009-02-13T23:31:30Z',
+		exp => 1234567890000000000,
+	},
+
 	{
 		sub => 'chrome',
 		obs => 'foo',
