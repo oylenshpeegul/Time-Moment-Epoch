@@ -98,6 +98,60 @@ sub to_cocoa {
 	_time2epoch($tm, 1, 978_307_200);
 }
 
+=head2 dos
+
+DOS time stores dates since S<1980-01-01> in bitfields.
+
+=cut
+
+# DOS time uses bit fields to store dates between 1980-01-01 and
+# 2107-12-31 (it fails outside that range).
+sub dos {
+	my $num = shift;
+
+	my $year   = ($num >> 25) & 0b1111111;
+
+	my $month  = ($num >> 21) &    0b1111;
+	return if $month < 1 or $month > 12;
+
+	my $day    = ($num >> 16) &   0b11111;
+	return if $day < 1 or $day > 31;
+
+	my $hour   = ($num >> 11) &   0b11111;
+	return if $hour < 0 or $hour > 23;
+
+	my $minute = ($num >>  5) &  0b111111;
+	return if $minute < 0 or $minute > 60;
+
+	my $second = ($num      ) &   0b11111;
+	return if $second < 0 or $second > 60;
+
+	Time::Moment->new(
+		year   => 1980 + $year,
+		month  => $month,
+		day    => $day,
+		hour   => $hour,
+		minute => $minute,
+		second => 2 * $second,
+	);
+
+}
+sub to_dos {
+	my $tm = shift;
+
+	if (ref $tm ne 'Time::Moment') {
+		$tm = Time::Moment->from_string($tm);
+	}
+
+	($tm->year - 1980  << 25) +
+	($tm->month        << 21) +
+	($tm->day_of_month << 16) +
+	($tm->hour         << 11) +
+	($tm->minute       <<  5) +
+	($tm->second / 2);
+
+}
+
 =head2 google_calendar
 
 Google Calendar time is 32-day months from the day before the Unix epoch.
