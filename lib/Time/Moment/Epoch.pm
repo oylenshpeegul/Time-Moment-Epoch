@@ -1,3 +1,8 @@
+#####################################################################
+## ABSTRACT: Convert various epoch times to Time::Moment times.
+#####################################################################
+
+
 package Time::Moment::Epoch;
 
 use v5.10;
