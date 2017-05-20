@@ -1,4 +1,4 @@
-# Epochs
+# Time::Moment::Epoch
 Convert various epoch times to `Time::Moment` times in Perl.
 
 For example, running this code
@@ -9,11 +9,11 @@ For example, running this code
 use v5.10;
 use strict;
 use warnings;
-use Epochs;
+use Time::Moment::Epoch;
 
-say Epochs::unix(1234567890);
+say Time::Moment::Epoch::unix(1234567890);
 
-say Epochs::chrome(12879041490654321);
+say Time::Moment::Epoch::chrome(12879041490654321);
 ```
 
 would give
@@ -31,11 +31,11 @@ would give
 use v5.10;
 use strict;
 use warnings;
-use Epochs;
+use Time::Moment::Epoch;
 
-say Epochs::to_unix('2009-02-13T23:31:30Z');
+say Time::Moment::Epoch::to_unix('2009-02-13T23:31:30Z');
 
-say Epochs::to_chrome('2009-02-13T23:31:30.654321Z');
+say Time::Moment::Epoch::to_chrome('2009-02-13T23:31:30.654321Z');
 ```
 
 gives
@@ -55,7 +55,7 @@ This project was first done with [DateTime](http://p3rl.org/DateTime). Then it w
 
 ## See Also
 
-See [the Epochs page](http://oylenshpeegul.github.io/Epochs-perl/) for motivation.
+See [the Epochs page](http://oylenshpeegul.github.io/Time::Moment::Epoch/) for motivation.
 
 There are also similar things in
 - [Go](https://github.com/oylenshpeegul/epochs)
