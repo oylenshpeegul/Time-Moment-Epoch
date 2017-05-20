@@ -1,4 +1,4 @@
-package Epochs;
+package Time::Moment::Epoch;
 
 use v5.10;
 use strict;
@@ -13,7 +13,7 @@ my $NANOSECONDS_PER_DAY = $SECONDS_PER_DAY * 1e9;
 
 =head1 NAME
 
-Epochs
+Time::Moment::Epoch
 
 =head1 DESCRIPTION
 
@@ -21,16 +21,16 @@ Convert various epoch times to and from datetimes using L<Time::Moment>.
 
 =head1 SYNOPSIS
 
-	use Epochs;
+	use Time::Moment::Epoch;
 
-	say Epochs::unix(1234567890);
+	say Time::Moment::Epoch::unix(1234567890);
 			# 2009-02-13T23:31:30Z
-	say Epochs::to_unix('2009-02-13T23:31:30Z');
+	say Time::Moment::Epoch::to_unix('2009-02-13T23:31:30Z');
 			# 1234567890
 
-	say Epochs::chrome(12879041490654321);
+	say Time::Moment::Epoch::chrome(12879041490654321);
 			# 2009-02-13T23:31:30.654321Z
-	say Epochs::to_chrome('2009-02-13T23:31:30.654321Z');
+	say Time::Moment::Epoch::to_chrome('2009-02-13T23:31:30.654321Z');
 			# 12879041490654321
 
 =head1 CONVERSIONS
