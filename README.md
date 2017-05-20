@@ -55,7 +55,7 @@ This project was first done with [DateTime](http://p3rl.org/DateTime). Then it w
 
 ## See Also
 
-See [the Time::Moment::Epoch web page](http://oylenshpeegul.github.io/Time::Moment::Epoch/) for motivation.
+See [the Time::Moment::Epoch web page](http://oylenshpeegul.github.io/Time-Moment-Epoch/) for motivation.
 
 [Time::Moment::Epoch](https://metacpan.org/pod/Time::Moment::Epoch/) is now available on CPAN.
 
