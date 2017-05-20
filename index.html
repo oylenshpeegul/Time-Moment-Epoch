@@ -2,17 +2,17 @@
 <html lang="en">
   <head>
 	<meta charset="utf-8">
-    <title>Epochs</title>
+    <title>Time::Moment::Epoch</title>
     <link rel="stylesheet" type ="text/css" href="default.css" />
     <link rel="shortcut icon" href="favicon.ico" />
 	<link href='https://fonts.googleapis.com/css?family=Amiri' rel='stylesheet' type='text/css'>
 	<link href='https://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
   </head>
   <body>
-    <h1>Epochs</h1>
+    <h1>Time::Moment::Epoch</h1>
     <div class="framed">
 
-	  <h2> So, what does Epochs do?</h2>
+	  <h2> So, what does Time::Moment::Epoch do?</h2>
 	  
 	  <p>It seems everything has its own idea of what a timestamp
 	  is. For example, I use Firefox most of the time. It keeps track
@@ -58,7 +58,7 @@ Wed Sep 19 21:57:19 EST 46312356
 	  into a standard datetime</p>
 
 	  <pre>
-$ perl -MEpochs -E 'say Epochs::mozilla("1461414650785039")'
+$ perl -MTime::Moment::Epoch -E 'say Time::Moment::Epoch::mozilla("1461414650785039")'
 2016-04-23T12:30:50.785039Z
 	  </pre>
 
@@ -96,21 +96,21 @@ Mon Nov 20 13:09:32 EST 415337223
 	  <p>Again, some crazy time in the future?</p>
 
 	  <pre>
-$ perl -MEpochs -E 'say Epochs::chrome("13106714670814172")'
+$ perl -MTime::Moment::Epoch -E 'say Time::Moment::Epoch::chrome("13106714670814172")'
 2016-05-03T02:04:30.814172Z
 	  </pre>
 	  
 	  <p>No, it was just a little while ago. Chromium measures time in
 	  microseconds also, but instead of starting at 1970, it starts at
-	  1601. But you don't have to remember that because <a href="https://github.com/oylenshpeegul/Epochs-perl">Epochs</a> does.
+	  1601. But you don't have to remember that because <a href="https://github.com/oylenshpeegul/Time::Moment::Epoch">Time::Moment::Epoch</a> does.
 	  </p>
 
 	  <h2> Lots of times!</h2>
 
 	  <p>Firefox and Chromium times are just two examples. This module
-	  knows a bunch more (chrome, cocoa, google_calendar, icq, java,
+	  knows a bunch more (apfs, chrome, cocoa, google_calendar, icq, java,
 	  mozilla, ole, symbian, unix, uuid_v1, windows_date,
-	  windows_file). If you know any others, <a href="https://github.com/oylenshpeegul/Epochs-perl">please let me know</a>!</p>
+	  windows_file). If you know any others, <a href="https://github.com/oylenshpeegul/Time::Moment::Epoch">please let me know</a>!</p>
 
     </div>
   </body>
