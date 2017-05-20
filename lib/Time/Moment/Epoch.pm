@@ -4,6 +4,7 @@
 
 
 package Time::Moment::Epoch;
+# VERSION
 
 use v5.10;
 use strict;
