@@ -51,7 +51,7 @@ gives
 
 [@regina-verbae](https://github.com/regina-verbae) made numerous improvements to the code, tests, and documentation.
 
-[@iopuckoi](https://github.com/iopuckoi) added link and fixed quotes.
+[@iopuckoi](https://github.com/iopuckoi) added a link and fixed quotes.
 
 ## History
 
