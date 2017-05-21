@@ -49,6 +49,10 @@ gives
 
 [@noppers](https://github.com/noppers) originally worked out how to do the Google Calendar calculation.
 
+[@regina-verbae](https://github.com/regina-verbae) made numerous improvements to the code, tests, and documentation.
+
+[@iopuckoi](https://github.com/iopuckoi) added link and fixed quotes.
+
 ## History
 
 This project was first done with [DateTime](http://p3rl.org/DateTime). Then it was refactored to use [Time::Piece](http://p3rl.org/Time::Piece), which is in the standard library. When I found out about [Time::Moment](http://p3rl.org/Time::Moment), I just had to refactor it again. Dependencies be damned-- I like this one the best!
