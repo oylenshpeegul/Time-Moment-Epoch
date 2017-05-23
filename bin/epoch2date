@@ -15,6 +15,7 @@ GetOptions(
 	'debug!',
 	'help|?',
 	'man',
+	'reverse',
 	'verbose!',
 ) or pod2usage(2);
 pod2usage(1) if $opt{help};
@@ -29,10 +30,11 @@ for my $conv ($opt{conversion}->@*) {
 
 for my $arg (@ARGV) {
     for my $conv ($opt{conversion}->@*) {
-        my $tm = do {
-            no strict 'refs';
-            "Time::Moment::Epoch::$conv"->($arg);
-        };
+		no strict 'refs';
+
+        my $tm = $opt{reverse}
+			? "Time::Moment::Epoch::to_$conv"->($arg)
+            : "Time::Moment::Epoch::$conv"->($arg);
         p $tm if $opt{debug};
 
         say $opt{verbose}
@@ -98,6 +100,15 @@ as well.
                     unix: 1500000000 => 2017-07-14T02:40:00Z
          google_calendar: 1500000000 => 2015-03-17T02:40:00Z
 
+You can reverse the calculations too.
+
+    $ ./epoch2date --reverse 2009-02-13T23:31:30Z
+    1234567890
+
+    $ ./epoch2date -r -c unix -c google_calendar -v 2009-02-13T23:31:30Z
+                    unix: 2009-02-13T23:31:30Z => 1234567890
+         google_calendar: 2009-02-13T23:31:30Z => 1297899090
+
 
 =head1 OPTIONS
 
@@ -136,6 +147,10 @@ Prints a brief help message and exits.
 =item B<--man>
 
 Prints the manual page and exits.
+
+=item B<--reverse>
+
+Reverse the conversions (from Time::Moment to given epoch type).
 
 =item B<--verbose>
 
