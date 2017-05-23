@@ -9,7 +9,7 @@ use Pod::Usage;
 use Time::Moment::Epoch;
 
 GetOptions(
-    'conversion=s@' => \(my $conversion = 'unix'),
+    'conversion=s@' => \(my $conversion = ['unix']),
     'debug!'        => \(my $debug),
     'help|?'        => \(my $help),
     man             => \(my $man),
@@ -20,13 +20,9 @@ pod2usage(-verbose => 2) if $man;
 
 p $conversion if $debug;
 
-my @CONVERSIONS = qw(apfs chrome cocoa dos google_calendar icq java
-                     mozilla ole symbian unix uuid_v1 windows_date
-                     windows_file);
-
 for my $conv ($conversion->@*) {
 	pod2usage("unknown conversion: '$conv'")
-		unless any {$conv eq $_} @CONVERSIONS;
+		unless any {$conv eq $_} @Time::Moment::Epoch::CONVERSIONS;
 }
     
 for my $arg (@ARGV) {

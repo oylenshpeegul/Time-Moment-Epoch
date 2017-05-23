@@ -17,6 +17,24 @@ use Time::Moment;
 my $SECONDS_PER_DAY = 24 * 60 * 60;
 my $NANOSECONDS_PER_DAY = $SECONDS_PER_DAY * 1e9;
 
+our @CONVERSIONS = qw(
+    apfs
+    chrome
+    cocoa
+    dos
+    google_calendar
+    icq
+    java
+    mozilla
+    ole
+    symbian
+    unix
+    uuid_v1
+    windows_date
+    windows_file
+);
+
+
 =head1 NAME
 
 Time::Moment::Epoch
