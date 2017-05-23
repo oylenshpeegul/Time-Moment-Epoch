@@ -1,0 +1,153 @@
+#!/usr/bin/env perl
+
+use v5.24;
+use warnings;
+use Data::Printer;
+use Getopt::Long;
+use List::MoreUtils 'any';
+use Pod::Usage;
+use Time::Moment::Epoch;
+
+GetOptions(
+    'conversion=s@' => \(my $conversion = 'unix'),
+    'debug!'        => \(my $debug),
+    'help|?'        => \(my $help),
+    man             => \(my $man),
+    'verbose!'      => \(my $verbose),
+) or pod2usage(2);
+pod2usage(1) if $help;
+pod2usage(-verbose => 2) if $man;
+
+p $conversion if $debug;
+
+my @CONVERSIONS = qw(apfs chrome cocoa dos google_calendar icq java
+                     mozilla ole symbian unix uuid_v1 windows_date
+                     windows_file);
+
+for my $conv ($conversion->@*) {
+	pod2usage("unknown conversion: '$conv'")
+		unless any {$conv eq $_} @CONVERSIONS;
+}
+    
+for my $arg (@ARGV) {
+	for my $conv ($conversion->@*) {
+		my $tm = do {
+			no strict 'refs';
+			"Time::Moment::Epoch::$conv"->($arg);
+		};
+		p $tm if $debug;
+	
+		say $verbose
+			? sprintf("%20s: %s => %s", $conv, $arg, $tm)
+			: $tm;
+	}
+}
+
+__END__
+
+=head1 NAME
+
+epoch2date - convert the given number to a date
+
+=head1 SYNOPSIS
+
+epoch2date [OPTIONS] number [number ...]
+
+=head1 EXAMPLES
+
+Default is Unix time and brief output.
+
+    $ ./epoch2date 1234567890 
+    2009-02-13T23:31:30Z
+
+Choose a different conversion.
+
+    $ ./epoch2date --conversion=google_calendar 1234567890 
+    2007-03-16T23:31:30Z
+
+You can use a short option too.
+
+    $ ./epoch2date -c google_calendar 1234567890 
+    2007-03-16T23:31:30Z
+
+You can ask for more details with verbose output.
+
+    $ ./epoch2date 1234567890 --verbose
+    unix: 1234567890 => 2009-02-13T23:31:30Z
+
+This is handy if you're doing more than one conversion at a time.
+
+    $ ./epoch2date -c google_calendar 1234567890 1500000000
+    2007-03-16T23:31:30Z
+    2015-03-17T02:40:00Z
+
+    $ ./epoch2date -c google_calendar 1234567890 1500000000 -v
+         google_calendar: 1234567890 => 2007-03-16T23:31:30Z
+         google_calendar: 1500000000 => 2015-03-17T02:40:00Z
+
+And downright necessary if you're doing more than one conversion type
+as well.
+
+    $ ./epoch2date -c unix -c google_calendar 1234567890 1500000000 
+    2009-02-13T23:31:30Z
+    2007-03-16T23:31:30Z
+    2017-07-14T02:40:00Z
+    2015-03-17T02:40:00Z
+
+    $ ./epoch2date -c unix -c google_calendar 1234567890 1500000000 -v
+                    unix: 1234567890 => 2009-02-13T23:31:30Z
+         google_calendar: 1234567890 => 2007-03-16T23:31:30Z
+                    unix: 1500000000 => 2017-07-14T02:40:00Z
+         google_calendar: 1500000000 => 2015-03-17T02:40:00Z
+
+
+=head1 OPTIONS
+
+=over 4
+
+=item B<--conversion=STRING>
+
+Use STRING as the conversion type. Choices are:
+
+    apfs
+    chrome
+    cocoa
+    dos
+    google_calendar
+    icq
+    java
+    mozilla
+    ole
+    symbian
+    unix
+    uuid_v1
+    windows_date
+    windows_file
+
+Default is unix. This option can be repeated for more than one
+conversion at a time.
+
+=item B<--debug>
+
+Prints extra messages.
+
+=item B<--help>
+
+Prints a brief help message and exits.
+
+=item B<--man>
+
+Prints the manual page and exits.
+
+=item B<--verbose>
+
+Prints results in more detail.
+
+=back
+
+=head1 DESCRIPTION
+
+B<epoch2date> will apply the given conversions from
+Time::Moment::Epoch to the given numbers.
+
+=cut
