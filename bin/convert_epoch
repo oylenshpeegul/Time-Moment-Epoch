@@ -47,54 +47,54 @@ __END__
 
 =head1 NAME
 
-epoch2date - convert the given number to a date
+convert_epoch - convert the given number to a date
 
 =head1 SYNOPSIS
 
-epoch2date [OPTIONS] number [number ...]
+convert_epoch [OPTIONS] number [number ...]
 
 =head1 EXAMPLES
 
 Default is Unix time and brief output.
 
-    $ ./epoch2date 1234567890
+    $ ./convert_epoch 1234567890
     2009-02-13T23:31:30Z
 
 Choose a different conversion.
 
-    $ ./epoch2date --conversion=google_calendar 1234567890
+    $ ./convert_epoch --conversion=google_calendar 1234567890
     2007-03-16T23:31:30Z
 
 You can use a short option too.
 
-    $ ./epoch2date -c google_calendar 1234567890
+    $ ./convert_epoch -c google_calendar 1234567890
     2007-03-16T23:31:30Z
 
 You can ask for more details with verbose output.
 
-    $ ./epoch2date 1234567890 --verbose
+    $ ./convert_epoch 1234567890 --verbose
     unix: 1234567890 => 2009-02-13T23:31:30Z
 
 This is handy if you're doing more than one conversion at a time.
 
-    $ ./epoch2date -c google_calendar 1234567890 1500000000
+    $ ./convert_epoch -c google_calendar 1234567890 1500000000
     2007-03-16T23:31:30Z
     2015-03-17T02:40:00Z
 
-    $ ./epoch2date -c google_calendar 1234567890 1500000000 -v
+    $ ./convert_epoch -c google_calendar 1234567890 1500000000 -v
          google_calendar: 1234567890 => 2007-03-16T23:31:30Z
          google_calendar: 1500000000 => 2015-03-17T02:40:00Z
 
 And downright necessary if you're doing more than one conversion type
 as well.
 
-    $ ./epoch2date -c unix -c google_calendar 1234567890 1500000000
+    $ ./convert_epoch -c unix -c google_calendar 1234567890 1500000000
     2009-02-13T23:31:30Z
     2007-03-16T23:31:30Z
     2017-07-14T02:40:00Z
     2015-03-17T02:40:00Z
 
-    $ ./epoch2date -c unix -c google_calendar 1234567890 1500000000 -v
+    $ ./convert_epoch -c unix -c google_calendar 1234567890 1500000000 -v
                     unix: 1234567890 => 2009-02-13T23:31:30Z
          google_calendar: 1234567890 => 2007-03-16T23:31:30Z
                     unix: 1500000000 => 2017-07-14T02:40:00Z
@@ -102,10 +102,10 @@ as well.
 
 You can reverse the calculations too.
 
-    $ ./epoch2date --reverse 2009-02-13T23:31:30Z
+    $ ./convert_epoch --reverse 2009-02-13T23:31:30Z
     1234567890
 
-    $ ./epoch2date -r -c unix -c google_calendar -v 2009-02-13T23:31:30Z
+    $ ./convert_epoch -r -c unix -c google_calendar -v 2009-02-13T23:31:30Z
                     unix: 2009-02-13T23:31:30Z => 1234567890
          google_calendar: 2009-02-13T23:31:30Z => 1297899090
 
@@ -160,7 +160,8 @@ Prints results in more detail.
 
 =head1 DESCRIPTION
 
-B<epoch2date> will apply the given conversions from
-Time::Moment::Epoch to the given numbers.
+B<convert_epoch> will apply the given conversions from
+Time::Moment::Epoch to the given numbers (or to the given dates, if
+reverse option is used).
 
 =cut
