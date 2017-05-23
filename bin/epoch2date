@@ -8,32 +8,34 @@ use List::MoreUtils 'any';
 use Pod::Usage;
 use Time::Moment::Epoch;
 
+my %opt;
 GetOptions(
-    'conversion=s@' => \(my $conversion = ['unix']),
-    'debug!'        => \(my $debug),
-    'help|?'        => \(my $help),
-    man             => \(my $man),
-    'verbose!'      => \(my $verbose),
+	\%opt,
+	'conversion=s@',
+	'debug!',
+	'help|?',
+	'man',
+	'verbose!',
 ) or pod2usage(2);
-pod2usage(1) if $help;
-pod2usage(-verbose => 2) if $man;
+pod2usage(1) if $opt{help};
+pod2usage(-verbose => 2) if $opt{man};
+$opt{conversion} //= ['unix'];
+p %opt if $opt{debug};
 
-p $conversion if $debug;
-
-for my $conv ($conversion->@*) {
+for my $conv ($opt{conversion}->@*) {
     pod2usage("unknown conversion: '$conv'")
         unless any {$conv eq $_} @Time::Moment::Epoch::CONVERSIONS;
 }
 
 for my $arg (@ARGV) {
-    for my $conv ($conversion->@*) {
+    for my $conv ($opt{conversion}->@*) {
         my $tm = do {
             no strict 'refs';
             "Time::Moment::Epoch::$conv"->($arg);
         };
-        p $tm if $debug;
+        p $tm if $opt{debug};
 
-        say $verbose
+        say $opt{verbose}
             ? sprintf("%20s: %s => %s", $conv, $arg, $tm)
             : $tm;
     }
