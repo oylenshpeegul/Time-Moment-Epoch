@@ -78,7 +78,7 @@ You can ask for more details with verbose output.
 This is handy if you're doing more than one conversion at a time.
 
     $ ./convert_epoch -c google_calendar 1234567890 1500000000
-    2007-03-16T23:31:30Z
+    2007-03-16T23:31:30Z 
     2015-03-17T02:40:00Z
 
     $ ./convert_epoch -c google_calendar 1234567890 1500000000 -v
