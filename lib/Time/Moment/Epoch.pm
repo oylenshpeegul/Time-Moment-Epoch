@@ -59,9 +59,12 @@ Convert various epoch times to and from datetimes using L<Time::Moment>.
 
 =head1 CONVERSIONS
 
-The following functions convert an epoch of the specified type to a Time::Moment object.
+The following functions convert an epoch of the specified type to a
+Time::Moment object.
 
-They each have a corresponding C<to_$type> function which accepts a datetime string (in any format accepted by the C<from_string> method of L<Time::Moment>) and returns the corresponding epoch.
+They each have a corresponding C<to_$type> function which accepts a
+datetime string (in any format accepted by the C<from_string> method
+of L<Time::Moment>) and returns the corresponding epoch.
 
 =head2 apfs
 
@@ -210,7 +213,8 @@ sub to_google_calendar {
 
 =head2 icq
 
-ICQ time is the number of days (with an allowed fractional part) since S<1899-12-30>.
+ICQ time is the number of days (with an allowed fractional part) since
+S<1899-12-30>.
 
 =cut
 
@@ -277,7 +281,8 @@ sub to_mozilla {
 
 =head2 ole
 
-OLE time is the number of days since S<1899-12-30>, packed as a double-precision float in native format.
+OLE time is the number of days since S<1899-12-30>, packed as a
+double-precision float in native format.
 
 =cut
 
@@ -337,7 +342,8 @@ sub to_unix {
 
 =head2 uuid_v1
 
-UUID version 1 time (RFC 4122) is the number of hectonanoseconds S<(100 ns)> since S<1582-10-15>.
+UUID version 1 time (RFC 4122) is the number of hectonanoseconds
+S<(100 ns)> since S<1582-10-15>.
 
 =cut
 
@@ -355,7 +361,8 @@ sub to_uuid_v1 {
 
 =head2 windows_date
 
-Windows date time (e.g., .NET) is the number of hectonanoseconds S<(100 ns)> since S<0001-01-01>.
+Windows date time (e.g., .NET) is the number of hectonanoseconds
+S<(100 ns)> since S<0001-01-01>.
 
 =cut
 
@@ -373,7 +380,8 @@ sub to_windows_date {
 
 =head2 windows_file
 
-Windows file time (e.g., NTFS) is the number of hectonanoseconds S<(100 ns)> since S<1601-01-01>.
+Windows file time (e.g., NTFS) is the number of hectonanoseconds
+S<(100 ns)> since S<1601-01-01>.
 
 =cut
 
