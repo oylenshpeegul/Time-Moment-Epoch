@@ -1,10 +1,9 @@
 
 use strict;
 use warnings;
+use Math::Int64 qw(int64 :native_if_available);
 use Time::Moment::Epoch;
 use Test::Most;
-
-no warnings 'portable';
 
 my $PROG = 'bin/convert_epoch';
 
@@ -19,9 +18,8 @@ my @tests = (
 	},
 	{
 		obs => "$PROG -r -c windows_file 2010-03-04T14:50:16.559001600Z",
-		exp => 0x1cabbaa00ca9000,
+		exp => int64('129121878165590016'),
 	},
-
 );
 
 for my $t (@tests) {
