@@ -233,7 +233,7 @@ sub icq {
 	# Want the fractional part of the day in nanoseconds.
 	my $fracday = int(($days - $intdays) * $NANOSECONDS_PER_DAY);
 
-	return $t->plus_days($days)->plus_nanoseconds($fracday);
+	return $t->plus_days($intdays)->plus_nanoseconds($fracday);
 }
 sub to_icq {
 	my $tm = shift;
