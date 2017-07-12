@@ -17,6 +17,11 @@ use Time::Moment;
 my $SECONDS_PER_DAY = 24 * 60 * 60;
 my $NANOSECONDS_PER_DAY = $SECONDS_PER_DAY * 1e9;
 
+# From moment.h
+my $MAX_UNIT_DAYS = 3652425; 
+my $MAX_UNIT_SECONDS =  31556952000;
+my $MIN_UNIT_SECONDS = -31556952000;
+
 our @CONVERSIONS = qw(
     apfs
     chrome
@@ -230,6 +235,9 @@ sub icq {
 
 	my $intdays = int($days);
 
+	# It seems plus_days has its limitations.
+	return if $intdays > $MAX_UNIT_DAYS;
+
 	# Want the fractional part of the day in nanoseconds.
 	my $fracday = int(($days - $intdays) * $NANOSECONDS_PER_DAY);
 
@@ -406,8 +414,13 @@ sub _epoch2time {
 	return unless looks_like_number $num;
 
 	my($z, $m) = Math::BigInt->new($num)->bdiv($q);
-	my $r = ($m * 1e9)->bdiv($q);
-	Time::Moment->from_epoch($z + $s, $r);
+	my $seconds = $z + $s;
+
+	# It seems from_epoch has its limitations.
+	return if $seconds > $MAX_UNIT_SECONDS or $seconds < $MIN_UNIT_SECONDS;
+
+	my $nanoseconds = ($m * 1e9)->bdiv($q);
+	Time::Moment->from_epoch($seconds, $nanoseconds);
 }
 
 sub _time2epoch {
