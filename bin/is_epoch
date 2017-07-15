@@ -1,0 +1,123 @@
+#!/usr/bin/env perl
+
+use v5.24;
+use warnings;
+use experimental 'signatures';
+use Data::Printer;
+use Getopt::Long;
+use Math::BigInt try => 'GMP';
+use Pod::Usage;
+use Time::Moment::Epoch;
+
+my %opt = (
+	max_date => 2027,
+	min_date => 2007,
+);
+
+GetOptions(
+	\%opt,
+	'debug!',
+	'help|?',
+	'man',
+	'verbose!',
+) or pod2usage(2);
+pod2usage(1) if $opt{help};
+pod2usage(-verbose => 2) if $opt{man};
+p %opt if $opt{debug};
+
+pprint(get_epochs(@ARGV));
+
+sub get_epochs {
+	my %epochs;
+	for my $arg (@_) {
+		if ($arg =~ /^-?\d+\.\d+$/) {
+			if (my $result = Time::Moment::Epoch::icq($arg)) {
+				$epochs{$arg}{float}{icq} = $result;
+			}
+		}
+		if ($arg =~ /^-?\d+$/) {
+			try_int('decimal_int', $arg, \%epochs);
+		}
+		if ($arg =~ /^-?[0-9a-fA-F]+$/) {
+			try_int('hexadecimal_int',
+					Math::BigInt->new("0x$arg")->bstr,
+					\%epochs);
+		}
+	}
+	return \%epochs;
+}
+
+sub pprint ($epochs) {
+	my @lines;
+	for my $arg (keys $epochs->%*) {
+		for my $type (keys $epochs->{$arg}->%*) {
+			for my $conv (keys $epochs->{$arg}{$type}->%*) {
+				push @lines,
+					"$epochs->{$arg}{$type}{$conv}\t($arg, $type, $conv)";
+			}
+		}
+	}
+	for my $line (reverse sort @lines) {
+		next if $line gt $opt{max_date};
+		next if $line lt $opt{min_date};
+		say $line;
+	}
+}
+
+sub try_int ($type, $arg, $epochs) {
+	no strict 'refs';
+	for my $conv (@Time::Moment::Epoch::CONVERSIONS) {
+		if (my $tm = "Time::Moment::Epoch::$conv"->($arg)) {
+			$epochs->{$arg}{$type}{$conv} = $tm;
+		}
+	}
+}
+
+
+__END__
+
+=head1 NAME
+
+is_epoch - guess if the given number is an epoch
+
+=head1 SYNOPSIS
+
+is_epoch [OPTIONS] number [number ...]
+
+=head1 EXAMPLES
+
+Default is Unix time and brief output.
+
+    $ ./is_epoch 1234567890
+    2009-02-13T23:31:30Z
+
+
+=head1 OPTIONS
+
+=over 4
+
+=item B<--debug>
+
+Prints extra messages.
+
+=item B<--help>
+
+Prints a brief help message and exits.
+
+=item B<--man>
+
+Prints the manual page and exits.
+
+=item B<--verbose>
+
+Prints results in more detail.
+
+=back
+
+=head1 DESCRIPTION
+
+B<is_epoch> will guess if any of the conversions from
+Time::Moment::Epoch gives a reasonable date for the given numbers.
+
+=cut
+
