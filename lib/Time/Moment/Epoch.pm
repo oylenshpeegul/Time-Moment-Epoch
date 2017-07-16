@@ -19,14 +19,22 @@ my $NANOSECONDS_PER_DAY = $SECONDS_PER_DAY * 1e9;
 
 # From moment.h
 my $MAX_UNIT_DAYS = 3652425; 
-my $MAX_UNIT_SECONDS =  31556952000;
-my $MIN_UNIT_SECONDS = -31556952000;
+my $MAX_UNIT_MONTHS = 120000;
+#my $MAX_UNIT_SECONDS = '315569520000';
+#my $MIN_UNIT_SECONDS = '-315569520000';
+
+# "Time::Moment" can represent all epoch integers from
+# "-62,135,596,800" to "253,402,300,799"; this range suffices to
+# measure times to nanosecond precision for any instant that is within
+# "0001-01-01T00:00:00Z" to "9999-12-31T23:59:59Z".
+my $MAX_SECONDS = '253_402_300_799';
+my $MIN_SECONDS = '-62_135_596_800';
 
 our @CONVERSIONS = qw(
     apfs
     chrome
     cocoa
-    dos
+
     google_calendar
     icq
     java
@@ -53,7 +61,7 @@ Convert various epoch times to and from datetimes using L<Time::Moment>.
 	use Time::Moment::Epoch;
 
 	say Time::Moment::Epoch::unix(1234567890);
-			# 2009-02-13T23:31:30Z
+		# 2009-02-13T23:31:30Z
 	say Time::Moment::Epoch::to_unix('2009-02-13T23:31:30Z');
 			# 1234567890
 
@@ -194,6 +202,8 @@ sub google_calendar {
 	my $b = Math::BigInt->new($n);
 	my($total_days, $seconds) = $b->bdiv($SECONDS_PER_DAY);
 	my($months, $days) = $total_days->bdiv(32);
+
+	return if $months > $MAX_UNIT_MONTHS;
 
 	Time::Moment
 		  ->from_epoch(-$SECONDS_PER_DAY)
@@ -416,10 +426,10 @@ sub _epoch2time {
 	my($z, $m) = Math::BigInt->new($num)->bdiv($q);
 	my $seconds = $z + $s;
 
-	# It seems from_epoch has its limitations.
-	return if $seconds > $MAX_UNIT_SECONDS or $seconds < $MIN_UNIT_SECONDS;
+	return if $seconds < $MIN_SECONDS or $seconds > $MAX_SECONDS;
 
 	my $nanoseconds = ($m * 1e9)->bdiv($q);
+
 	Time::Moment->from_epoch($seconds, $nanoseconds);
 }
 
