@@ -86,36 +86,38 @@ sub get_epochs {
 }
 
 sub pprint ($epochs) {
+
+	my $stringified = _stringify($epochs);
+
 	my @lines;
-	for my $arg (keys $epochs->%*) {
-		for my $type (keys $epochs->{$arg}->%*) {
-			for my $conv (keys $epochs->{$arg}{$type}->%*) {
+	for my $arg (keys $stringified->%*) {
+		for my $type (keys $stringified->{$arg}->%*) {
+			for my $conv (keys $stringified->{$arg}{$type}->%*) {
 				push @lines,
-					"$epochs->{$arg}{$type}{$conv}\t($arg, $type, $conv)";
+					"$stringified->{$arg}{$type}{$conv}\t($arg, $type, $conv)";
 			}
 		}
 	}
 
-	say for
-		reverse
-		sort
-		grep {$_ ge $opt{min_date}} 
-		grep {$_ le $opt{max_date}}
-		@lines;
+	say for	reverse	sort @lines;
 }
 
 sub json ($epochs) {
+	encode_json(_stringify($epochs));
+}
+
+sub _stringify ($epochs) {
 	my $stringified;
 	for my $arg (keys $epochs->%*) {
 		for my $type (keys $epochs->{$arg}->%*) {
 			for my $conv (keys $epochs->{$arg}{$type}->%*) {
-				$stringified->{$arg}{$type}{$conv} =
-					$epochs->{$arg}{$type}{$conv}->to_string;
+				my $s = $epochs->{$arg}{$type}{$conv}->to_string;
+				next if $s lt $opt{min_date} or $s gt $opt{max_date};
+				$stringified->{$arg}{$type}{$conv} = $s;
 			}
 		}
 	}
-
-	encode_json $stringified;
+	return $stringified;
 }
 
 sub try_float ($arg, $epochs) {
