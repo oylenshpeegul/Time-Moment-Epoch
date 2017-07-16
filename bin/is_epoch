@@ -11,9 +11,9 @@ use Pod::Usage;
 use Time::Moment::Epoch;
 
 my %opt = (
-	max_date => Time::Moment->now->year + 1,
-	min_date => Time::Moment->now->year - 1,
-	output => 'pprint',
+	max_date => '9999-12-31T23:59:59Z',
+	min_date => '0001-01-01T00:00:00Z',
+	output => 'as_string',
 );
 
 GetOptions(
@@ -34,10 +34,10 @@ p %opt if $opt{debug};
 
 my $epochs = get_epochs(@ARGV);
 
-if ($opt{output} eq 'pprint') {
-	pprint($epochs);
-} elsif ($opt{output} eq 'json') {
-	say json($epochs);
+if ($opt{output} eq 'as_string') {
+	as_string($epochs);
+} elsif ($opt{output} eq 'as_json') {
+	as_json($epochs);
 } else {
 	die "Don't know how to output '$opt{output}'";
 }
@@ -85,35 +85,27 @@ sub get_epochs {
 	return \%epochs;
 }
 
-sub pprint ($epochs) {
-
-	my $stringified = _stringify($epochs);
-
-	my @lines;
-	for my $arg (keys $stringified->%*) {
-		for my $type (keys $stringified->{$arg}->%*) {
-			for my $conv (keys $stringified->{$arg}{$type}->%*) {
-				push @lines,
-					"$stringified->{$arg}{$type}{$conv}\t($arg, $type, $conv)";
-			}
-		}
-	}
-
-	say for	reverse	sort @lines;
+sub as_string ($epochs) {
+	say for reverse sort @{_stringify($epochs)};
 }
 
-sub json ($epochs) {
-	encode_json(_stringify($epochs));
+sub as_json ($epochs) {
+	say encode_json(_stringify($epochs, 0));
 }
 
-sub _stringify ($epochs) {
+sub _stringify ($epochs, $flatten=1) {
 	my $stringified;
 	for my $arg (keys $epochs->%*) {
 		for my $type (keys $epochs->{$arg}->%*) {
 			for my $conv (keys $epochs->{$arg}{$type}->%*) {
 				my $s = $epochs->{$arg}{$type}{$conv}->to_string;
 				next if $s lt $opt{min_date} or $s gt $opt{max_date};
-				$stringified->{$arg}{$type}{$conv} = $s;
+				if ($flatten) {
+					push @$stringified,
+						"$epochs->{$arg}{$type}{$conv}\t($arg, $type, $conv)";
+				} else {
+					$stringified->{$arg}{$type}{$conv} = $s;
+				}
 			}
 		}
 	}
@@ -192,11 +184,15 @@ Prints the manual page and exits.
 
 =item B<--max_date=STRING>
 
-Maximum date to print out. Default next year.
+Maximum date to print out. Default is 9999-12-31T23:59:59Z. It's just a string compare, so you can include as little or as much of that ISO-8601 date as you want (e.g., --max_date=2017).
 
 =item B<--min_date=STRING>
 
-Minimum date to print out. Default last year.
+Minimum date to print out. Default is 0001-01-01T00:00:00Z. It's just a string compare, so you can include as little or as much of that ISO-8601 date as you want (e.g., --min_date=2017).
+
+=item B<--output=STRING>
+
+Output format (as_string or as_json). Default as_string.
 
 =item B<--verbose>
 
