@@ -84,11 +84,13 @@ sub pprint ($epochs) {
 			}
 		}
 	}
-	for my $line (reverse sort @lines) {
-		next if $line gt $opt{max_date};
-		next if $line lt $opt{min_date};
-		say $line;
-	}
+
+	say for
+		reverse
+		sort
+		grep {$_ ge $opt{min_date}} 
+		grep {$_ le $opt{max_date}}
+		@lines;
 }
 
 sub try_float ($arg, $epochs) {
