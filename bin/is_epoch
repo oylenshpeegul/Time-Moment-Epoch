@@ -10,12 +10,16 @@ use Pod::Usage;
 use Time::Moment::Epoch;
 
 my %opt = (
-	max_date => 2027,
-	min_date => 2007,
+	max_date => Time::Moment->now->year + 1,
+	min_date => Time::Moment->now->year - 1,
 );
 
 GetOptions(
 	\%opt,
+
+	'max_date=s',
+	'min_date=s',
+
 	'debug!',
 	'help|?',
 	'man',
@@ -30,18 +34,41 @@ pprint(get_epochs(@ARGV));
 sub get_epochs {
 	my %epochs;
 	for my $arg (@_) {
+
+		# Floating point number.
 		if ($arg =~ /^-?\d+\.\d+$/) {
-			if (my $result = Time::Moment::Epoch::icq($arg)) {
-				$epochs{$arg}{float}{icq} = $result;
-			}
+			try_float(
+				$arg,
+				\%epochs,
+			);
 		}
+
+		# Decimal number.
 		if ($arg =~ /^-?\d+$/) {
-			try_int('decimal_int', $arg, \%epochs);
+			try_int(
+				'decimal',
+				$arg,
+				$arg,
+				\%epochs,
+			);
 		}
+
+		# Hexadecimal number.
 		if ($arg =~ /^-?[0-9a-fA-F]+$/) {
-			try_int('hexadecimal_int',
-					Math::BigInt->new("0x$arg")->bstr,
-					\%epochs);
+			try_int(
+				'hexadecimal',
+				$arg,
+				Math::BigInt->new("0x$arg")->bstr,
+				\%epochs,
+			);
+		}
+
+		# 64-bit Hexadecimal number.
+		if ($arg =~ /^[0-9a-fA-F]{16}$/) {
+			try_hex64bit(
+				$arg,
+				\%epochs,
+			);
 		}
 	}
 	return \%epochs;
@@ -64,11 +91,37 @@ sub pprint ($epochs) {
 	}
 }
 
-sub try_int ($type, $arg, $epochs) {
+sub try_float ($arg, $epochs) {
+	my @floats = qw(icq);
+
 	no strict 'refs';
-	for my $conv (@Time::Moment::Epoch::CONVERSIONS) {
+	for my $conv (@floats) {
 		if (my $tm = "Time::Moment::Epoch::$conv"->($arg)) {
-			$epochs->{$arg}{$type}{$conv} = $tm;
+			$epochs->{$arg}{'float'}{$conv} = $tm;
+		}
+	}
+}
+
+sub try_hex64bit ($arg, $epochs) {
+	my @hex64s = qw(ole);
+
+	no strict 'refs';
+	for my $conv (@hex64s) {
+		if (my $tm = "Time::Moment::Epoch::$conv"->(pack 'H*', $arg)) {
+			$epochs->{$arg}{'hex64bit'}{$conv} = $tm;
+		}
+	}
+}
+
+sub try_int ($type, $orig, $arg, $epochs) {
+	my @ints = qw(apfs chrome cocoa dos google_calendar
+				  icq java mozilla symbian unix uuid_v1
+				  windows_date windows_file);
+
+	no strict 'refs';
+	for my $conv (@ints) {
+		if (my $tm = "Time::Moment::Epoch::$conv"->($arg)) {
+			$epochs->{$orig}{$type}{$conv} = $tm;
 		}
 	}
 }
@@ -107,6 +160,14 @@ Prints a brief help message and exits.
 =item B<--man>
 
 Prints the manual page and exits.
+
+=item B<--max_date=STRING>
+
+Maximum date to print out. Default next year.
+
+=item B<--min_date=STRING>
+
+Minimum date to print out. Default last year.
 
 =item B<--verbose>
 
