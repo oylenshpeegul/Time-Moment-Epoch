@@ -5,6 +5,7 @@ use warnings;
 use experimental 'signatures';
 use Data::Printer;
 use Getopt::Long;
+use JSON;
 use Math::BigInt try => 'GMP';
 use Pod::Usage;
 use Time::Moment::Epoch;
@@ -12,6 +13,7 @@ use Time::Moment::Epoch;
 my %opt = (
 	max_date => Time::Moment->now->year + 1,
 	min_date => Time::Moment->now->year - 1,
+	output => 'pprint',
 );
 
 GetOptions(
@@ -19,6 +21,7 @@ GetOptions(
 
 	'max_date=s',
 	'min_date=s',
+	'output=s',
 
 	'debug!',
 	'help|?',
@@ -29,7 +32,15 @@ pod2usage(1) if $opt{help};
 pod2usage(-verbose => 2) if $opt{man};
 p %opt if $opt{debug};
 
-pprint(get_epochs(@ARGV));
+my $epochs = get_epochs(@ARGV);
+
+if ($opt{output} eq 'pprint') {
+	pprint($epochs);
+} elsif ($opt{output} eq 'json') {
+	say json($epochs);
+} else {
+	die "Don't know how to output '$opt{output}'";
+}
 
 sub get_epochs {
 	my %epochs;
@@ -91,6 +102,20 @@ sub pprint ($epochs) {
 		grep {$_ ge $opt{min_date}} 
 		grep {$_ le $opt{max_date}}
 		@lines;
+}
+
+sub json ($epochs) {
+	my $stringified;
+	for my $arg (keys $epochs->%*) {
+		for my $type (keys $epochs->{$arg}->%*) {
+			for my $conv (keys $epochs->{$arg}{$type}->%*) {
+				$stringified->{$arg}{$type}{$conv} =
+					$epochs->{$arg}{$type}{$conv}->to_string;
+			}
+		}
+	}
+
+	encode_json $stringified;
 }
 
 sub try_float ($arg, $epochs) {
