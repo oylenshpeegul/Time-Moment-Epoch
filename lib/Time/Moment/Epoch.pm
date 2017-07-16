@@ -20,8 +20,6 @@ my $NANOSECONDS_PER_DAY = $SECONDS_PER_DAY * 1e9;
 # From moment.h
 my $MAX_UNIT_DAYS = 3652425; 
 my $MAX_UNIT_MONTHS = 120000;
-#my $MAX_UNIT_SECONDS = '315569520000';
-#my $MIN_UNIT_SECONDS = '-315569520000';
 
 # "Time::Moment" can represent all epoch integers from
 # "-62,135,596,800" to "253,402,300,799"; this range suffices to
@@ -34,7 +32,7 @@ our @CONVERSIONS = qw(
     apfs
     chrome
     cocoa
-
+    dos
     google_calendar
     icq
     java
