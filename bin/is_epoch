@@ -42,52 +42,43 @@ if ($opt{output} eq 'as_string') {
 	die "Don't know how to output '$opt{output}'";
 }
 
-sub get_epochs {
+sub get_epochs (@args) {
 	my %epochs;
-	for my $arg (@_) {
+	for my $arg (@args) {
 
 		# Floating point number.
 		if ($arg =~ /^-?\d+\.\d+$/) {
-			try_float(
-				$arg,
-				\%epochs,
-			);
+			if (my $href = try_float($arg)) {
+				$epochs{$arg}{float} = $href;
+			}
 		}
 
 		# Decimal number.
 		if ($arg =~ /^-?\d+$/) {
-			try_int(
-				'decimal',
-				$arg,
-				$arg,
-				\%epochs,
-			);
+			if (my $href = try_int($arg)) {
+				$epochs{$arg}{decimal} = $href;
+			}
 		}
 
 		# Hexadecimal number.
 		if ($arg =~ /^-?[0-9a-fA-F]+$/) {
-			try_int(
-				'hexadecimal',
-				$arg,
-				Math::BigInt->new("0x$arg")->bstr,
-				\%epochs,
-			);
+			if (my $href = try_int(Math::BigInt->new("0x$arg")->bstr)) {
+				$epochs{$arg}{hexadecimal} = $href;
+			}
 		}
 
 		# 64-bit Hexadecimal number.
 		if ($arg =~ /^[0-9a-fA-F]{16}$/) {
-			try_hex64bit(
-				$arg,
-				\%epochs,
-			);
+			if (my $href = try_hex64bit($arg)) {
+				$epochs{$arg}{hex64bit} = $href;
+			}
 		}
 
 		# 128-bit Hexadecimal number.
 		if ($arg =~ /^(?:0x)?[0-9a-fA-F]{32}$/) {
-			try_hex128bit(
-				$arg,
-				\%epochs,
-			);
+			if (my $href = try_hex128bit($arg)) {
+				$epochs{$arg}{hex128bit} = $href;
+			}
 		}
 
 	}
@@ -129,50 +120,54 @@ sub _stringify ($epochs, $flatten=1) {
 	return $stringified;
 }
 
-sub try_float ($arg, $epochs) {
+sub try_float ($arg) {
 	my @floats = qw(icq);
-
+	my %h;
 	no strict 'refs';
 	for my $conv (@floats) {
 		if (my $tm = "Time::Moment::Epoch::$conv"->($arg)) {
-			$epochs->{$arg}{'float'}{$conv} = $tm;
+			$h{$conv} = $tm;
 		}
 	}
+	return \%h;
 }
 
-sub try_hex64bit ($arg, $epochs) {
+sub try_hex64bit ($arg) {
 	my @hex64s = qw(ole);
-
+	my %h;
 	no strict 'refs';
 	for my $conv (@hex64s) {
 		if (my $tm = "Time::Moment::Epoch::$conv"->(pack 'H*', $arg)) {
-			$epochs->{$arg}{'hex64bit'}{$conv} = $tm;
+			$h{$conv} = $tm;
 		}
 	}
+	return \%h;
 }
 
-sub try_hex128bit ($arg, $epochs) {
+sub try_hex128bit ($arg) {
 	my @hex128s = qw(windows_system);
-
+	my %h;
 	no strict 'refs';
 	for my $conv (@hex128s) {
 		if (my $tm = "Time::Moment::Epoch::$conv"->($arg)) {
-			$epochs->{$arg}{'hex128bit'}{$conv} = $tm;
+			$h{$conv} = $tm;
 		}
 	}
+	return \%h;
 }
 
-sub try_int ($type, $orig, $arg, $epochs) {
+sub try_int ($arg) {
 	my @ints = qw(apfs chrome cocoa dos google_calendar
 				  icq java mozilla symbian unix uuid_v1
 				  windows_date windows_file);
-
+	my %h;
 	no strict 'refs';
 	for my $conv (@ints) {
 		if (my $tm = "Time::Moment::Epoch::$conv"->($arg)) {
-			$epochs->{$orig}{$type}{$conv} = $tm;
+			$h{$conv} = $tm;
 		}
 	}
+	return \%h;
 }
 
 
