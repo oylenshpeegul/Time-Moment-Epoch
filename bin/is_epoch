@@ -81,16 +81,33 @@ sub get_epochs {
 				\%epochs,
 			);
 		}
+
+		# 128-bit Hexadecimal number.
+		if ($arg =~ /^[0-9a-fA-F]{32}$/) {
+			try_hex128bit(
+				$arg,
+				\%epochs,
+			);
+		}
+
 	}
 	return \%epochs;
 }
 
 sub as_string ($epochs) {
-	say for reverse sort @{_stringify($epochs)};
+	if (my $results = _stringify($epochs)) {
+		say for reverse sort @{$results};
+	} else {
+		say "no results" if $opt{verbose};
+	}
 }
 
 sub as_json ($epochs) {
-	say encode_json(_stringify($epochs, 0));
+	if (my $results = _stringify($epochs, 0)) {
+		say encode_json($results);
+	} else {
+		say "no results" if $opt{verbose};
+	}
 }
 
 sub _stringify ($epochs, $flatten=1) {
@@ -130,6 +147,17 @@ sub try_hex64bit ($arg, $epochs) {
 	for my $conv (@hex64s) {
 		if (my $tm = "Time::Moment::Epoch::$conv"->(pack 'H*', $arg)) {
 			$epochs->{$arg}{'hex64bit'}{$conv} = $tm;
+		}
+	}
+}
+
+sub try_hex128bit ($arg, $epochs) {
+	my @hex128s = qw(windows_system);
+
+	no strict 'refs';
+	for my $conv (@hex128s) {
+		if (my $tm = "Time::Moment::Epoch::$conv"->("0x$arg")) {
+			$epochs->{$arg}{'hex128bit'}{$conv} = $tm;
 		}
 	}
 }
@@ -184,11 +212,11 @@ Prints the manual page and exits.
 
 =item B<--max_date=STRING>
 
-Maximum date to print out. Default is 9999-12-31T23:59:59Z. It's just a string compare, so you can include as little or as much of that ISO-8601 date as you want (e.g., --max_date=2017).
+Maximum date to print out. Default is 9999-12-31T23:59:59Z. It's just a string compare, so you can include as little or as much of an ISO-8601 date as you want (e.g., --max_date=2017).
 
 =item B<--min_date=STRING>
 
-Minimum date to print out. Default is 0001-01-01T00:00:00Z. It's just a string compare, so you can include as little or as much of that ISO-8601 date as you want (e.g., --min_date=2017).
+Minimum date to print out. Default is 0001-01-01T00:00:00Z. It's just a string compare, so you can include as little or as much of an ISO-8601 date as you want (e.g., --min_date=2017).
 
 =item B<--output=STRING>
 
