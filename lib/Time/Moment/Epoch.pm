@@ -432,6 +432,9 @@ minute       0..59
 second       0..59
 milliseconds 0..999
 
+Note that Time::Moment day_of_week is one-based and starts on Monday
+(so Sunday is 7 instead of 0).
+
 =cut
 
 sub windows_system {
@@ -494,7 +497,7 @@ sub to_windows_system {
 	my $hex = sprintf "%04x%04x%04x%04x%04x%04x%04x%04x",
 		$tm->year,
 		$tm->month,
-		$tm->day_of_week,
+		$tm->day_of_week % 7,
 		$tm->day_of_month,
 		$tm->hour,
 		$tm->minute,
