@@ -437,7 +437,7 @@ milliseconds 0..999
 sub windows_system {
 	my $num = shift;
 
-	my $hex = substr Math::BigInt->new($num)->as_hex, 2;
+	my $hex = substr Math::BigInt->new("0x$num")->as_hex, 2;
 	
 	return if length $hex > 32;
 	return if length $hex < 0;
@@ -495,7 +495,7 @@ sub to_windows_system {
 		$tm->millisecond;
 	
 	# Change endian-ness.
-	'0x' . join '', hashmap {"$b$a"} ($hex =~ /../g);
+	join '', hashmap {"$b$a"} ($hex =~ /../g);
 }
 	
 sub _epoch2time {
