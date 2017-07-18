@@ -9,6 +9,7 @@ package Time::Moment::Epoch;
 use v5.10;
 use strict;
 use warnings;
+use Hash::MostUtils qw(hashmap);
 use Math::BigInt try => 'GMP';
 use Math::BigFloat;
 use Scalar::Util qw(looks_like_number);
@@ -24,7 +25,7 @@ my $NANOSECONDS_PER_DAY = $SECONDS_PER_DAY * 1e9;
 my $MAX_SECONDS = 253_402_300_799;
 my $MIN_SECONDS = -62_135_596_800;
 
-# From moment.h
+# Here are a few more constants from moment.h that we need.
 my $MAX_UNIT_DAYS = 3652425; 
 my $MIN_UNIT_DAYS = -3652425; 
 my $MAX_UNIT_MONTHS = 120000;
@@ -416,6 +417,84 @@ sub to_windows_file {
 	_time2epoch($tm, 10_000_000, -11_644_473_600);
 }
 
+=head2 windows_system
+
+Windows system time is a sixteen byte representation of Windows file
+time. It's in eight sixteen-bit segments...sort of like a ctime.
+
+year         1601..30827
+month        1..12       (January..December)
+day_of_week  0..6        (Sunday..Saturday)
+day          1..31
+hour         0..23
+minute       0..59
+second       0..59
+milliseconds 0..999
+
+=cut
+
+sub windows_system {
+	my $num = shift;
+
+	my $hex = substr Math::BigInt->new($num)->as_hex, 2;
+	return if length $hex > 32;
+	return if length $hex < 0;
+	$hex = "0$hex" while length $hex < 32;
+
+	my @bytes = ($hex =~ /../g);
+	my @keys = qw(year month day_of_week day hour minute second milliseconds);
+	my @values = hashmap {hex "$b$a"} @bytes;
+	
+	my %wst;
+	@wst{@keys} = @values;
+
+	return unless
+		$wst{year}         >= 1601 and $wst{year}         <= 30827 and
+		$wst{month}        >=    1 and $wst{month}        <=    12 and
+		$wst{day_of_week}  >=    0 and $wst{day_of_week}  <=     6 and
+		$wst{day}          >=    1 and $wst{day}          <=    31 and
+		$wst{hour}         >=    0 and $wst{hour}         <=    23 and
+		$wst{minute}       >=    0 and $wst{minute}       <=    59 and
+		$wst{second}       >=    0 and $wst{second}       <=    59 and
+		$wst{milliseconds} >=    0 and $wst{milliseconds} <=   999;
+
+	return Time::Moment->new(
+		year => $wst{year},
+		month => $wst{month},
+		day => $wst{day},
+		hour => $wst{hour},
+		minute => $wst{minute},
+		second => $wst{second},
+		nanosecond => $wst{milliseconds} * 1e6);
+}
+
+sub to_windows_system {
+	my $tm = shift;
+	$tm = Time::Moment->from_string($tm);
+	
+	return unless
+		$tm->year         >= 1601 and $tm->year         <= 30827 and
+		$tm->month        >=    1 and $tm->month        <=    12 and
+		$tm->day_of_week  >=    1 and $tm->day_of_week  <=     7 and
+		$tm->day_of_month >=    1 and $tm->day_of_month <=    31 and
+		$tm->hour         >=    0 and $tm->hour         <=    23 and
+		$tm->minute       >=    0 and $tm->minute       <=    59 and
+		$tm->second       >=    0 and $tm->second       <=    59 and
+		$tm->millisecond  >=    0 and $tm->millisecond  <=   999;
+
+	my $hex = sprintf "%04x%04x%04x%04x%04x%04x%04x%04x",
+		$tm->year,
+		$tm->month,
+		$tm->day_of_week,
+		$tm->day_of_month,
+		$tm->hour,
+		$tm->minute,
+		$tm->second,     
+		$tm->millisecond;
+	
+	# Change endian-ness.
+	'0x' . join '', hashmap {"$b$a"} ($hex =~ /../g);
+}
 	
 sub _epoch2time {
 	my $num = shift // return;
