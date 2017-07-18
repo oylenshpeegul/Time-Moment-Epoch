@@ -437,7 +437,14 @@ milliseconds 0..999
 sub windows_system {
 	my $num = shift;
 
-	my $hex = substr Math::BigInt->new("0x$num")->as_hex, 2;
+	if ($num =~ /^[0-9a-fA-F]{32}$/) {
+		$num = "0x$num";
+	}
+
+	my $bigint = Math::BigInt->new($num);
+	return if $bigint eq 'NaN';
+
+	my $hex = substr $bigint->as_hex, 2;
 	
 	return if length $hex > 32;
 	return if length $hex < 0;
