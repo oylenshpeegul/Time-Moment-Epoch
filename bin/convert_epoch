@@ -132,6 +132,7 @@ Use STRING as the conversion type. Choices are:
     uuid_v1
     windows_date
     windows_file
+    windows_system
 
 Default is unix. This option can be repeated for more than one
 conversion at a time.
