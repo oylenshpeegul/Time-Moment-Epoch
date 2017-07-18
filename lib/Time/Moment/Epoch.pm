@@ -46,6 +46,7 @@ our @CONVERSIONS = qw(
     uuid_v1
     windows_date
     windows_file
+    windows_system
 );
 
 
@@ -437,6 +438,7 @@ sub windows_system {
 	my $num = shift;
 
 	my $hex = substr Math::BigInt->new($num)->as_hex, 2;
+	
 	return if length $hex > 32;
 	return if length $hex < 0;
 	$hex = "0$hex" while length $hex < 32;
@@ -459,12 +461,12 @@ sub windows_system {
 		$wst{milliseconds} >=    0 and $wst{milliseconds} <=   999;
 
 	return Time::Moment->new(
-		year => $wst{year},
-		month => $wst{month},
-		day => $wst{day},
-		hour => $wst{hour},
-		minute => $wst{minute},
-		second => $wst{second},
+		year	   => $wst{year},
+		month	   => $wst{month},
+		day		   => $wst{day},
+		hour	   => $wst{hour},
+		minute	   => $wst{minute},
+		second	   => $wst{second},
 		nanosecond => $wst{milliseconds} * 1e6);
 }
 
