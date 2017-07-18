@@ -83,7 +83,7 @@ sub get_epochs {
 		}
 
 		# 128-bit Hexadecimal number.
-		if ($arg =~ /^[0-9a-fA-F]{32}$/) {
+		if ($arg =~ /^(?:0x)?[0-9a-fA-F]{32}$/) {
 			try_hex128bit(
 				$arg,
 				\%epochs,
@@ -156,7 +156,7 @@ sub try_hex128bit ($arg, $epochs) {
 
 	no strict 'refs';
 	for my $conv (@hex128s) {
-		if (my $tm = "Time::Moment::Epoch::$conv"->("0x$arg")) {
+		if (my $tm = "Time::Moment::Epoch::$conv"->($arg)) {
 			$epochs->{$arg}{'hex128bit'}{$conv} = $tm;
 		}
 	}
