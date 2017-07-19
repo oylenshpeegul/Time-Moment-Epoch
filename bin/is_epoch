@@ -13,7 +13,7 @@ use Time::Moment::Epoch ':all';
 my %opt = (
 	max_date => '9999-12-31T23:59:59Z',
 	min_date => '0001-01-01T00:00:00Z',
-	output => 'as_string',
+	output	 => 'as_string',
 );
 
 GetOptions(
@@ -95,23 +95,23 @@ sub get_epochs (@args) {
 	return \%epochs;
 }
 
-sub as_string ($epochs) {
-	if (my $results = _stringify($epochs)) {
-		say for reverse sort @{$results};
-	} else {
-		say "no results" if $opt{verbose};
-	}
-}
-
 sub as_json ($epochs) {
-	if (my $results = _stringify($epochs, 0)) {
+	if (my $results = stringify($epochs, 0)) {
 		say encode_json($results);
 	} else {
 		say "no results" if $opt{verbose};
 	}
 }
 
-sub _stringify ($epochs, $flatten=1) {
+sub as_string ($epochs) {
+	if (my $results = stringify($epochs)) {
+		say for reverse sort @{$results};
+	} else {
+		say "no results" if $opt{verbose};
+	}
+}
+
+sub stringify ($epochs, $flatten=1) {
 	my $stringified;
 	for my $arg (keys $epochs->%*) {
 		for my $type (keys $epochs->{$arg}->%*) {
