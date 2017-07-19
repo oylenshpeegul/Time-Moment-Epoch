@@ -49,8 +49,9 @@ our @conversions = qw(
     windows_file
     windows_system
 );
-
-our @EXPORT_OK = (@conversions, qw(@conversions));
+our @to_conversions = map {"to_$_"} @conversions;
+our @EXPORT_OK = (@conversions,	@to_conversions,
+				  qw(@conversions @to_conversions));
 our %EXPORT_TAGS = (all => [@EXPORT_OK]);
 
 =head1 NAME
