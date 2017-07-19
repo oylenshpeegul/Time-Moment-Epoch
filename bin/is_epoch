@@ -43,33 +43,43 @@ if ($opt{output} eq 'as_string') {
 }
 
 sub get_epochs (@args) {
+	my %convs = (
+		floats	   => [qw(icq)],
+		hex64bits  => [qw(ole)],
+		hex128bits => [qw(windows_system)],
+		ints	   => [qw(apfs chrome cocoa dos google_calendar
+						  icq java mozilla symbian unix uuid_v1
+						  windows_date windows_file)],
+	);
+	
 	my %epochs;
 	for my $arg (@args) {
 
 		# Floating point number.
 		if ($arg =~ /^-?\d+\.\d+$/) {
-			if (my $href = try_float($arg)) {
+			if (my $href = try_as($arg, $convs{floats}->@*)) {
 				$epochs{$arg}{float} = $href;
 			}
 		}
 
 		# Decimal number.
 		if ($arg =~ /^-?\d+$/) {
-			if (my $href = try_int($arg)) {
+			if (my $href = try_as($arg, $convs{ints}->@*)) {
 				$epochs{$arg}{decimal} = $href;
 			}
 		}
 
 		# Hexadecimal number.
 		if ($arg =~ /^-?[0-9a-fA-F]+$/) {
-			if (my $href = try_int(Math::BigInt->new("0x$arg")->bstr)) {
+			if (my $href = try_as(Math::BigInt->new("0x$arg")->bstr,
+								  $convs{ints}->@*)) {
 				$epochs{$arg}{hexadecimal} = $href;
 			}
 		}
 
 		# 64-bit Hexadecimal number.
 		if ($arg =~ /^[0-9a-fA-F]{16}$/) {
-			if (my $href = try_hex64bit($arg)) {
+			if (my $href = try_as($arg, $convs{hex64bits}->@*)) {
 				$epochs{$arg}{hex64bit} = $href;
 			}
 		}
@@ -129,25 +139,6 @@ sub try_as ($arg, @convs) {
 		}
 	}
 	return \%h;
-}
-
-
-sub try_float ($arg) {
-	try_as($arg, qw(icq));
-}
-
-sub try_hex64bit ($arg) {
-	try_as($arg, qw(ole));
-}
-
-sub try_hex128bit ($arg) {
-	try_as($arg, qw(windows_system));
-}
-
-sub try_int ($arg) {
-	try_as($arg, qw(apfs chrome cocoa dos google_calendar
-					icq java mozilla symbian unix uuid_v1
-					windows_date windows_file));
 }
 
 
