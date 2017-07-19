@@ -8,7 +8,7 @@ use Getopt::Long;
 use JSON;
 use Math::BigInt try => 'GMP';
 use Pod::Usage;
-use Time::Moment::Epoch;
+use Time::Moment::Epoch ':all';
 
 my %opt = (
 	max_date => '9999-12-31T23:59:59Z',
@@ -120,54 +120,34 @@ sub _stringify ($epochs, $flatten=1) {
 	return $stringified;
 }
 
-sub try_float ($arg) {
-	my @floats = qw(icq);
-	my %h;
+sub try_as ($arg, @convs) {
 	no strict 'refs';
-	for my $conv (@floats) {
-		if (my $tm = "Time::Moment::Epoch::$conv"->($arg)) {
+	my %h;
+	for my $conv (@convs) {
+		if (my $tm = $conv->($arg)) {
 			$h{$conv} = $tm;
 		}
 	}
 	return \%h;
+}
+
+
+sub try_float ($arg) {
+	try_as($arg, qw(icq));
 }
 
 sub try_hex64bit ($arg) {
-	my @hex64s = qw(ole);
-	my %h;
-	no strict 'refs';
-	for my $conv (@hex64s) {
-		if (my $tm = "Time::Moment::Epoch::$conv"->(pack 'H*', $arg)) {
-			$h{$conv} = $tm;
-		}
-	}
-	return \%h;
+	try_as($arg, qw(ole));
 }
 
 sub try_hex128bit ($arg) {
-	my @hex128s = qw(windows_system);
-	my %h;
-	no strict 'refs';
-	for my $conv (@hex128s) {
-		if (my $tm = "Time::Moment::Epoch::$conv"->($arg)) {
-			$h{$conv} = $tm;
-		}
-	}
-	return \%h;
+	try_as($arg, qw(windows_system));
 }
 
 sub try_int ($arg) {
-	my @ints = qw(apfs chrome cocoa dos google_calendar
-				  icq java mozilla symbian unix uuid_v1
-				  windows_date windows_file);
-	my %h;
-	no strict 'refs';
-	for my $conv (@ints) {
-		if (my $tm = "Time::Moment::Epoch::$conv"->($arg)) {
-			$h{$conv} = $tm;
-		}
-	}
-	return \%h;
+	try_as($arg, qw(apfs chrome cocoa dos google_calendar
+					icq java mozilla symbian unix uuid_v1
+					windows_date windows_file));
 }
 
 
