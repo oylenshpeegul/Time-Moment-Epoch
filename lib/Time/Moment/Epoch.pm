@@ -9,6 +9,7 @@ package Time::Moment::Epoch;
 use v5.10;
 use strict;
 use warnings;
+use parent qw(Exporter);
 use Hash::MostUtils qw(hashmap);
 use Math::BigInt try => 'GMP';
 use Math::BigFloat;
@@ -31,7 +32,7 @@ my $MIN_UNIT_DAYS = -3652425;
 my $MAX_UNIT_MONTHS = 120000;
 my $MIN_UNIT_MONTHS = -120000;
 
-our @CONVERSIONS = qw(
+our @conversions = qw(
     apfs
     chrome
     cocoa
@@ -49,6 +50,8 @@ our @CONVERSIONS = qw(
     windows_system
 );
 
+our @EXPORT_OK = (@conversions, qw(@conversions));
+our %EXPORT_TAGS = (all => [@EXPORT_OK]);
 
 =head1 NAME
 
