@@ -6,7 +6,7 @@ use Data::Printer;
 use Getopt::Long;
 use List::MoreUtils 'any';
 use Pod::Usage;
-use Time::Moment::Epoch;
+use Time::Moment::Epoch ':all';
 
 my %opt;
 GetOptions(
@@ -25,7 +25,7 @@ p %opt if $opt{debug};
 
 for my $conv ($opt{conversion}->@*) {
     pod2usage("unknown conversion: '$conv'")
-        unless any {$conv eq $_} @Time::Moment::Epoch::CONVERSIONS;
+        unless any {$conv eq $_} @conversions;
 }
 
 for my $arg (@ARGV) {
@@ -33,8 +33,9 @@ for my $arg (@ARGV) {
 		no strict 'refs';
 
         my $tm = $opt{reverse}
-			? "Time::Moment::Epoch::to_$conv"->($arg)
-            : "Time::Moment::Epoch::$conv"->($arg);
+			? "to_$conv"->($arg)
+			: $conv->($arg);
+
         p $tm if $opt{debug};
 
         say $opt{verbose}
