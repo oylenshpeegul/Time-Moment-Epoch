@@ -51,9 +51,30 @@ sub get_epochs (@args) {
 						  icq java mozilla symbian unix uuid_v1
 						  windows_date windows_file)],
 	);
+
+	# Version 1 UUID's have timestamps in them. For example,
+	# 33c41a44-6cea-11e7-907b-a6006ad3dba0 => 1e76cea33c41a44
+	# -------- ----  ---               $+{high}$+{mid}$+{low}
+	# low      mid   high
+	#  8        4     3
+	# and 1e76cea33c41a44 => 2017-07-20T01:24:40.472634Z
+	my $UUIDv1 = qr{(?<low>[0-9A-Fa-f]{8})    -?
+                    (?<mid>[0-9A-Fa-f]{4})    -?
+                    1                            # this means version 1
+                    (?<high>[0-9A-Fa-f]{3})   -?
+                    [0-9A-Fa-f]{4}            -?
+                    [0-9A-Fa-f]{12}              }mxs;
 	
 	my %epochs;
 	for my $arg (@args) {
+
+		# UUIDv1.
+		if ($arg =~ /^$UUIDv1$/) {
+			my $bstr = Math::BigInt->new("0x$+{high}$+{mid}$+{low}")->bstr;
+			if (my $href = try_as($bstr, 'uuid_v1')) {
+				$epochs{$arg}{uuid_v1} = $href;
+			}
+		}
 
 		# Floating point number.
 		if ($arg =~ /^-?\d+\.\d+$/) {
@@ -77,14 +98,14 @@ sub get_epochs (@args) {
 			}
 		}
 
-		# 64-bit Hexadecimal number.
+		# 64-bit Hexadecimal.
 		if ($arg =~ /^[0-9a-fA-F]{16}$/) {
 			if (my $href = try_as($arg, $convs{hex64bits}->@*)) {
 				$epochs{$arg}{hex64bit} = $href;
 			}
 		}
 
-		# 128-bit Hexadecimal number.
+		# 128-bit Hexadecimal.
 		if ($arg =~ /^(?:0x)?[0-9a-fA-F]{32}$/) {
 			if (my $href = try_hex128bit($arg)) {
 				$epochs{$arg}{hex128bit} = $href;
