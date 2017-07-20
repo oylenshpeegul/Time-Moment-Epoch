@@ -96,6 +96,8 @@ sub get_epochs (@args) {
 			if (my $href = try_as($bstr, $convs{ints}->@*)) {
 				$epochs{$arg}{hexadecimal} = $href;
 			}
+
+			# Some hexadecimals could be big-endian or little-endian.
 			if (length($arg) == 8 or length($arg) == 16) {
 				my $swapped = swap_endian($arg);
 				my $bstr = Math::BigInt->new("0x$swapped")->bstr;
