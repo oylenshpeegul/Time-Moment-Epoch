@@ -91,10 +91,17 @@ sub get_epochs (@args) {
 		}
 
 		# Hexadecimal number.
-		if ($arg =~ /^-?[0-9a-fA-F]+$/) {
-			if (my $href = try_as(Math::BigInt->new("0x$arg")->bstr,
-								  $convs{ints}->@*)) {
+		if ($arg =~ /^[0-9a-fA-F]+$/) {
+			my $bstr = Math::BigInt->new("0x$arg")->bstr;
+			if (my $href = try_as($bstr, $convs{ints}->@*)) {
 				$epochs{$arg}{hexadecimal} = $href;
+			}
+			if (length($arg) == 8 or length($arg) == 16) {
+				my $swapped = swap_endian($arg);
+				my $bstr = Math::BigInt->new("0x$swapped")->bstr;
+				if (my $href = try_as($bstr, $convs{ints}->@*)) {
+					$epochs{$arg}{hexadecimal_swapped} = $href;
+				}
 			}
 		}
 
@@ -149,6 +156,15 @@ sub stringify ($epochs, $flatten=1) {
 		}
 	}
 	return $stringified;
+}
+
+sub swap_endian ($bs) {
+	my $HB = qr{(?<hb>[0-9a-fA-F]{2})};
+	if ($bs =~ /^$HB$HB$HB$HB$HB?$HB?$HB?$HB?$/) {
+		no warnings 'uninitialized';
+		return join q{}, reverse $-{hb}->@*;
+	}
+	return;
 }
 
 sub try_as ($arg, @convs) {
