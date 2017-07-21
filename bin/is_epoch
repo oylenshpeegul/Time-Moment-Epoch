@@ -68,7 +68,7 @@ sub get_epochs (@args) {
 	my %epochs;
 	for my $arg (@args) {
 
-		# UUIDv1.
+		# Full UUIDv1 string (with or without hyphens).
 		if ($arg =~ /^$UUIDv1$/) {
 			my $bstr = Math::BigInt->new("0x$+{high}$+{mid}$+{low}")->bstr;
 			if (my $href = try_as($bstr, 'uuid_v1')) {
