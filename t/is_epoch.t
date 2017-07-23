@@ -4,7 +4,7 @@ use warnings;
 use Time::Moment::Epoch;
 use Test::Most;
 
-my $PROG = 'bin/is_epoch';
+my $PROG = 'blib/script/is_epoch';
 
 my @tests = (
 	{
