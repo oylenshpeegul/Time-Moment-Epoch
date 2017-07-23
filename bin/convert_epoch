@@ -1,4 +1,4 @@
-#!/usr/bin/env perl
+#! perl
 
 #####################################################################
 ## ABSTRACT: Convert various epoch times to Time::Moment times.
