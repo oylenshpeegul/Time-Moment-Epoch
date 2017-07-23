@@ -1,7 +1,10 @@
 #!/usr/bin/env perl
 
-# PODNAME: convert_epoch
-# VERSION
+#####################################################################
+## ABSTRACT: Convert various epoch times to Time::Moment times.
+## PODNAME: convert_epoch
+## VERSION
+#####################################################################
 
 use v5.24;
 use warnings;
