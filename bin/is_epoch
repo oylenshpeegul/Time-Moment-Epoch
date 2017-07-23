@@ -1,4 +1,4 @@
-#!/usr/bin/env perl
+#! perl
 
 #####################################################################
 ## ABSTRACT: Guess if the given string could be an epoch time.
