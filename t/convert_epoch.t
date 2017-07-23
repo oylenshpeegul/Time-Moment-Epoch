@@ -5,7 +5,7 @@ use Math::Int64 qw(int64 :native_if_available);
 use Time::Moment::Epoch;
 use Test::Most;
 
-my $PROG = 'bin/convert_epoch';
+my $PROG = 'blib/script/convert_epoch';
 
 my @tests = (
 	{
