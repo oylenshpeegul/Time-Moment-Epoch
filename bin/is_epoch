@@ -1,7 +1,10 @@
 #!/usr/bin/env perl
 
-# PODNAME: convert_epoch
-# VERSION
+#####################################################################
+## ABSTRACT: Guess if the given string could be an epoch time.
+## PODNAME: is_epoch
+## VERSION
+#####################################################################
 
 use v5.24;
 use warnings;
