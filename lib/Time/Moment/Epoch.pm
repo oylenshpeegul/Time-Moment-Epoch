@@ -27,27 +27,27 @@ my $MAX_SECONDS = 253_402_300_799;
 my $MIN_SECONDS = -62_135_596_800;
 
 # Here are a few more constants from moment.h that we need.
-my $MAX_UNIT_DAYS = 3652425; 
-my $MIN_UNIT_DAYS = -3652425; 
+my $MAX_UNIT_DAYS = 3652425;
+my $MIN_UNIT_DAYS = -3652425;
 my $MAX_UNIT_MONTHS = 120000;
 my $MIN_UNIT_MONTHS = -120000;
 
 our @conversions = qw(
-    apfs
-    chrome
-    cocoa
-    dos
-    google_calendar
-    icq
-    java
-    mozilla
-    ole
-    symbian
-    unix
-    uuid_v1
-    windows_date
-    windows_file
-    windows_system
+	apfs
+	chrome
+	cocoa
+	dos
+	google_calendar
+	icq
+	java
+	mozilla
+	ole
+	symbian
+	unix
+	uuid_v1
+	windows_date
+	windows_file
+	windows_system
 );
 our @to_conversions = map {"to_$_"} @conversions;
 our @EXPORT_OK = (@conversions,	@to_conversions,
@@ -380,8 +380,8 @@ sub uuid_v1 {
 	_epoch2time($num, 10_000_000, -12_219_292_800);
 }
 sub to_uuid_v1 {
-    my $tm = shift;
-    _time2epoch($tm, 10_000_000, -12_219_292_800);
+	my $tm = shift;
+	_time2epoch($tm, 10_000_000, -12_219_292_800);
 }
 
 =head2 windows_date
@@ -452,7 +452,7 @@ sub windows_system {
 	return if $bigint eq 'NaN';
 
 	my $hex = substr $bigint->as_hex, 2;
-	
+
 	return if length $hex > 32;
 	return if length $hex < 0;
 	$hex = "0$hex" while length $hex < 32;
@@ -460,7 +460,7 @@ sub windows_system {
 	my @bytes = ($hex =~ /../g);
 	my @keys = qw(year month day_of_week day hour minute second milliseconds);
 	my @values = hashmap {hex "$b$a"} @bytes;
-	
+
 	my %wst;
 	@wst{@keys} = @values;
 
@@ -475,12 +475,12 @@ sub windows_system {
 		$wst{milliseconds} >=    0 and $wst{milliseconds} <=   999;
 
 	return Time::Moment->new(
-		year	   => $wst{year},
-		month	   => $wst{month},
-		day		   => $wst{day},
-		hour	   => $wst{hour},
-		minute	   => $wst{minute},
-		second	   => $wst{second},
+		year       => $wst{year},
+		month      => $wst{month},
+		day        => $wst{day},
+		hour       => $wst{hour},
+		minute     => $wst{minute},
+		second     => $wst{second},
 		nanosecond => $wst{milliseconds} * 1e6);
 }
 
@@ -505,13 +505,13 @@ sub to_windows_system {
 		$tm->day_of_month,
 		$tm->hour,
 		$tm->minute,
-		$tm->second,     
+		$tm->second,
 		$tm->millisecond;
-	
+
 	# Change endian-ness.
 	join '', hashmap {"$b$a"} ($hex =~ /../g);
 }
-	
+
 sub _epoch2time {
 	my $num = shift // return;
 	my $q = shift // 1;
@@ -537,7 +537,7 @@ sub _time2epoch {
 	if (ref $t ne 'Time::Moment') {
 		$t = Time::Moment->from_string($t);
 	}
-	
+
 	my $bf = Math::BigFloat->new($t->nanosecond)->bdiv(1e9);
 	int $m*($t->epoch + $bf - $s);
 }
