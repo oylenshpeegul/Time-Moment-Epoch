@@ -25,6 +25,10 @@ my @tests = (
 2031-10-05T04:24:02Z	(0123456789abcdef, hexadecimal_swapped, dos)
 1972-08-06T21:45:29.216486895Z	(0123456789abcdef, hexadecimal, apfs)",
 	},
+	{
+		obs => "$PROG d907020005000d0017001f001e000000",
+		exp => "2009-02-13T23:31:30Z	(d907020005000d0017001f001e000000, hex128bit, windows_system)",
+	},
 );
 
 for my $t (@tests) {
