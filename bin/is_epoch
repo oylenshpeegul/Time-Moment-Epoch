@@ -122,7 +122,7 @@ sub get_epochs (@args) {
 
 		# 128-bit Hexadecimal.
 		if ($arg =~ /^(?:0x)?[0-9a-fA-F]{32}$/) {
-			if (my $href = try_hex128bit($arg)) {
+			if (my $href = try_as($arg, $convs{hex128bits}->@*)) {
 				$epochs{$arg}{hex128bit} = $href;
 			}
 		}
@@ -199,10 +199,39 @@ is_epoch [OPTIONS] number [number ...]
 
 =head1 EXAMPLES
 
-Default is Unix time and brief output.
+Default is year 0001 to 9999, which is probably too much output. To
+get less, change the min and max values:
 
-    $ ./is_epoch 1234567890
-    2009-02-13T23:31:30Z
+    $ is_epoch 1234567890 --min 2007 --max 2017
+    2016-12-22T00:22:36Z    (1234567890, decimal, dos)
+    2009-02-13T23:31:30Z    (1234567890, decimal, unix)
+    2007-03-16T23:31:30Z    (1234567890, decimal, google_calendar)
+
+You can also ask for JSON output instead.
+
+    $ is_epoch 1234567890 --min 2007 --max 2017 --output=as_json
+    {"1234567890":{"decimal":{"dos":"2016-12-22T00:22:36Z","unix":"2009-02-13T23:31:30Z","google_calendar":"2007-03-16T23:31:30Z"}}}
+
+To make it more readable, just pipe it json_xs or jq whatever your
+favorite JSON prettifier is.
+
+    $ is_epoch 1234567890 --min 2007 --max 2017 --output=as_json | json_xs
+    {
+       "1234567890" : {
+          "decimal" : {
+             "unix" : "2009-02-13T23:31:30Z",
+             "dos" : "2016-12-22T00:22:36Z",
+             "google_calendar" : "2007-03-16T23:31:30Z"
+          }
+       }
+    }
+
+Most things are looking for a decimal or hexadecimal string, but you
+can also put a whole UUID in and it will grab the parts that make the
+date-time.
+
+    $ is_epoch 33c41a44-6cea-11e7-907b-a6006ad3dba0
+    2017-07-20T01:24:40.472634Z    (33c41a44-6cea-11e7-907b-a6006ad3dba0, uuid_v1, uuid_v1)
 
 
 =head1 OPTIONS
