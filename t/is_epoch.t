@@ -23,6 +23,10 @@ my @tests = (
         exp => "2022-02-22T19:22:22Z	(1EC9414C-232A-6B00-B3C8-9E6BDECED846, uuid_v6, uuid_v1)",
     },
     {
+        obs => "$PROG 017F22E2-79B0-7CC3-98C4-DC0C0C07398F",
+        exp => "2022-02-22T19:22:22Z	(017F22E2-79B0-7CC3-98C4-DC0C0C07398F, uuid_v7, java)",
+    },
+    {
         obs => "$PROG 0123456789abcdef --min=1900 --max=2600",
         exp => "2598-01-06T14:06:56.486895Z	(0123456789abcdef, hexadecimal, symbian)
 2517-07-28T00:25:51.921914625Z	(0123456789abcdef, hexadecimal_swapped, apfs)

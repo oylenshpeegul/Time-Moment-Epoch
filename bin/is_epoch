@@ -85,6 +85,17 @@ sub get_epochs (@args) {
                     [0-9A-Fa-f]{4}            -?
                     [0-9A-Fa-f]{12}              }mxs;
 
+    # Version 7 UUID's have UNIX timestamps in milliseconds (like
+    # Java) in them.  For example,
+    # 017F22E2-79B0-7CC3-98C4-DC0C0C07398F => 017f22e279b0
+    # and 017f22e279b0 => 2022-02-22T19:22:22Z
+    my $UUIDv7 = qr{(?<ts1>[0-9A-Fa-f]{8})    -?
+                    (?<ts2>[0-9A-Fa-f]{4})    -?
+                    7                            # this means version 7
+                    [0-9A-Fa-f]{3}            -?
+                    [0-9A-Fa-f]{4}            -?
+                    [0-9A-Fa-f]{12}              }mxs;
+
     my %epochs;
     for my $arg (@args) {
 
@@ -101,6 +112,14 @@ sub get_epochs (@args) {
             my $bstr = Math::BigInt->new("0x$+{high}$+{mid}$+{low}")->bstr;
             if (my $href = try_as($bstr, 'uuid_v1')) {
                 $epochs{$arg}{uuid_v6} = $href;
+            }
+        }
+
+        # Full UUIDv7 string (with or without hyphens).
+        if ($arg =~ /^$UUIDv7$/) {
+            my $bstr = Math::BigInt->new("0x$+{ts1}$+{ts2}")->bstr;
+            if (my $href = try_as($bstr, 'java')) {
+                $epochs{$arg}{uuid_v7} = $href;
             }
         }
 
