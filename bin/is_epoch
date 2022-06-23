@@ -71,6 +71,20 @@ sub get_epochs (@args) {
                     [0-9A-Fa-f]{4}            -?
                     [0-9A-Fa-f]{12}              }mxs;
     
+    # Version 6 UUID's have UUIDv1 timestamps in them, but in the
+    # reverse order. For example,
+    # 1e76cea3-3c41-6a44-907b-a6006ad3dba0 => 1e76cea33c41a44
+    # -------- ----  ---               $+{high}$+{mid}$+{low}
+    # high     mid   low
+    #  8        4     3
+    # and 1e76cea33c41a44 => 2017-07-20T01:24:40.472634Z
+    my $UUIDv6 = qr{(?<high>[0-9A-Fa-f]{8})   -?
+                    (?<mid>[0-9A-Fa-f]{4})    -?
+                    6                            # this means version 6
+                    (?<low>[0-9A-Fa-f]{3})    -?
+                    [0-9A-Fa-f]{4}            -?
+                    [0-9A-Fa-f]{12}              }mxs;
+
     my %epochs;
     for my $arg (@args) {
 
@@ -79,6 +93,14 @@ sub get_epochs (@args) {
             my $bstr = Math::BigInt->new("0x$+{high}$+{mid}$+{low}")->bstr;
             if (my $href = try_as($bstr, 'uuid_v1')) {
                 $epochs{$arg}{uuid_v1} = $href;
+            }
+        }
+
+        # Full UUIDv6 string (with or without hyphens).
+        if ($arg =~ /^$UUIDv6$/) {
+            my $bstr = Math::BigInt->new("0x$+{high}$+{mid}$+{low}")->bstr;
+            if (my $href = try_as($bstr, 'uuid_v1')) {
+                $epochs{$arg}{uuid_v6} = $href;
             }
         }
 
