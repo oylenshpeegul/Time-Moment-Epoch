@@ -17,22 +17,22 @@ use Pod::Usage;
 use Time::Moment::Epoch ':all';
 
 my %opt = (
-	max_date => '9999-12-31T23:59:59Z',
-	min_date => '0001-01-01T00:00:00Z',
-	output	 => 'as_string',
+    max_date => '9999-12-31T23:59:59Z',
+    min_date => '0001-01-01T00:00:00Z',
+    output     => 'as_string',
 );
 
 GetOptions(
-	\%opt,
+    \%opt,
 
-	'max_date=s',
-	'min_date=s',
-	'output=s',
+    'max_date=s',
+    'min_date=s',
+    'output=s',
 
-	'debug!',
-	'help|?',
-	'man',
-	'verbose!',
+    'debug!',
+    'help|?',
+    'man',
+    'verbose!',
 ) or pod2usage(2);
 pod2usage(1) if $opt{help};
 pod2usage(-verbose => 2) if $opt{man};
@@ -41,149 +41,149 @@ p %opt if $opt{debug};
 my $epochs = get_epochs(@ARGV);
 
 if ($opt{output} eq 'as_string') {
-	as_string($epochs);
+    as_string($epochs);
 } elsif ($opt{output} eq 'as_json') {
-	as_json($epochs);
+    as_json($epochs);
 } else {
-	die "Don't know how to output '$opt{output}'";
+    die "Don't know how to output '$opt{output}'";
 }
 
 sub get_epochs (@args) {
-	my %convs = (
-		floats	   => [qw(icq)],
-		hex64bits  => [qw(ole)],
-		hex128bits => [qw(windows_system)],
-		ints	   => [qw(apfs chrome cocoa dos google_calendar
-						  icq java mozilla symbian unix uuid_v1
-						  windows_date windows_file)],
-	);
+    my %convs = (
+        floats       => [qw(icq)],
+        hex64bits  => [qw(ole)],
+        hex128bits => [qw(windows_system)],
+        ints       => [qw(apfs chrome cocoa dos google_calendar
+                          icq java mozilla symbian unix uuid_v1
+                          windows_date windows_file)],
+    );
 
-	# Version 1 UUID's have timestamps in them. For example,
-	# 33c41a44-6cea-11e7-907b-a6006ad3dba0 => 1e76cea33c41a44
-	# -------- ----  ---               $+{high}$+{mid}$+{low}
-	# low      mid   high
-	#  8        4     3
-	# and 1e76cea33c41a44 => 2017-07-20T01:24:40.472634Z
-	my $UUIDv1 = qr{(?<low>[0-9A-Fa-f]{8})    -?
+    # Version 1 UUID's have timestamps in them. For example,
+    # 33c41a44-6cea-11e7-907b-a6006ad3dba0 => 1e76cea33c41a44
+    # -------- ----  ---               $+{high}$+{mid}$+{low}
+    # low      mid   high
+    #  8        4     3
+    # and 1e76cea33c41a44 => 2017-07-20T01:24:40.472634Z
+    my $UUIDv1 = qr{(?<low>[0-9A-Fa-f]{8})    -?
                     (?<mid>[0-9A-Fa-f]{4})    -?
                     1                            # this means version 1
                     (?<high>[0-9A-Fa-f]{3})   -?
                     [0-9A-Fa-f]{4}            -?
                     [0-9A-Fa-f]{12}              }mxs;
-	
-	my %epochs;
-	for my $arg (@args) {
+    
+    my %epochs;
+    for my $arg (@args) {
 
-		# Full UUIDv1 string (with or without hyphens).
-		if ($arg =~ /^$UUIDv1$/) {
-			my $bstr = Math::BigInt->new("0x$+{high}$+{mid}$+{low}")->bstr;
-			if (my $href = try_as($bstr, 'uuid_v1')) {
-				$epochs{$arg}{uuid_v1} = $href;
-			}
-		}
+        # Full UUIDv1 string (with or without hyphens).
+        if ($arg =~ /^$UUIDv1$/) {
+            my $bstr = Math::BigInt->new("0x$+{high}$+{mid}$+{low}")->bstr;
+            if (my $href = try_as($bstr, 'uuid_v1')) {
+                $epochs{$arg}{uuid_v1} = $href;
+            }
+        }
 
-		# Floating point number.
-		if ($arg =~ /^-?\d+\.\d+$/) {
-			if (my $href = try_as($arg, $convs{floats}->@*)) {
-				$epochs{$arg}{float} = $href;
-			}
-		}
+        # Floating point number.
+        if ($arg =~ /^-?\d+\.\d+$/) {
+            if (my $href = try_as($arg, $convs{floats}->@*)) {
+                $epochs{$arg}{float} = $href;
+            }
+        }
 
-		# Decimal number.
-		if ($arg =~ /^-?\d+$/) {
-			if (my $href = try_as($arg, $convs{ints}->@*)) {
-				$epochs{$arg}{decimal} = $href;
-			}
-		}
+        # Decimal number.
+        if ($arg =~ /^-?\d+$/) {
+            if (my $href = try_as($arg, $convs{ints}->@*)) {
+                $epochs{$arg}{decimal} = $href;
+            }
+        }
 
-		# Hexadecimal number.
-		if ($arg =~ /^[0-9a-fA-F]+$/) {
-			my $bstr = Math::BigInt->new("0x$arg")->bstr;
-			if (my $href = try_as($bstr, $convs{ints}->@*)) {
-				$epochs{$arg}{hexadecimal} = $href;
-			}
+        # Hexadecimal number.
+        if ($arg =~ /^[0-9a-fA-F]+$/) {
+            my $bstr = Math::BigInt->new("0x$arg")->bstr;
+            if (my $href = try_as($bstr, $convs{ints}->@*)) {
+                $epochs{$arg}{hexadecimal} = $href;
+            }
 
-			# Some hexadecimals could be big-endian or little-endian.
-			if (length($arg) == 8 or length($arg) == 16) {
-				my $swapped = swap_endian($arg);
-				my $bstr = Math::BigInt->new("0x$swapped")->bstr;
-				if (my $href = try_as($bstr, $convs{ints}->@*)) {
-					$epochs{$arg}{hexadecimal_swapped} = $href;
-				}
-			}
-		}
+            # Some hexadecimals could be big-endian or little-endian.
+            if (length($arg) == 8 or length($arg) == 16) {
+                my $swapped = swap_endian($arg);
+                my $bstr = Math::BigInt->new("0x$swapped")->bstr;
+                if (my $href = try_as($bstr, $convs{ints}->@*)) {
+                    $epochs{$arg}{hexadecimal_swapped} = $href;
+                }
+            }
+        }
 
-		# 64-bit Hexadecimal.
-		if ($arg =~ /^[0-9a-fA-F]{16}$/) {
-			if (my $href = try_as($arg, $convs{hex64bits}->@*)) {
-				$epochs{$arg}{hex64bit} = $href;
-			}
-		}
+        # 64-bit Hexadecimal.
+        if ($arg =~ /^[0-9a-fA-F]{16}$/) {
+            if (my $href = try_as($arg, $convs{hex64bits}->@*)) {
+                $epochs{$arg}{hex64bit} = $href;
+            }
+        }
 
-		# 128-bit Hexadecimal.
-		if ($arg =~ /^(?:0x)?[0-9a-fA-F]{32}$/) {
-			if (my $href = try_as($arg, $convs{hex128bits}->@*)) {
-				$epochs{$arg}{hex128bit} = $href;
-			}
-		}
+        # 128-bit Hexadecimal.
+        if ($arg =~ /^(?:0x)?[0-9a-fA-F]{32}$/) {
+            if (my $href = try_as($arg, $convs{hex128bits}->@*)) {
+                $epochs{$arg}{hex128bit} = $href;
+            }
+        }
 
-	}
-	return \%epochs;
+    }
+    return \%epochs;
 }
 
 sub as_json ($epochs) {
-	if (my $results = stringify($epochs, 0)) {
-		say encode_json($results);
-	} else {
-		say "no results" if $opt{verbose};
-	}
+    if (my $results = stringify($epochs, 0)) {
+        say encode_json($results);
+    } else {
+        say "no results" if $opt{verbose};
+    }
 }
 
 sub as_string ($epochs) {
-	if (my $results = stringify($epochs)) {
-		say for reverse sort @{$results};
-	} else {
-		say "no results" if $opt{verbose};
-	}
+    if (my $results = stringify($epochs)) {
+        say for reverse sort @{$results};
+    } else {
+        say "no results" if $opt{verbose};
+    }
 }
 
 sub stringify ($epochs, $flatten=1) {
-	my $stringified;
-	for my $arg (keys $epochs->%*) {
-		for my $type (keys $epochs->{$arg}->%*) {
-			for my $conv (keys $epochs->{$arg}{$type}->%*) {
-				my $s = $epochs->{$arg}{$type}{$conv}->to_string;
-				next if $s lt $opt{min_date} or $s gt $opt{max_date};
-				if ($flatten) {
-					push @$stringified,
-						"$epochs->{$arg}{$type}{$conv}\t($arg, $type, $conv)";
-				} else {
-					$stringified->{$arg}{$type}{$conv} = $s;
-				}
-			}
-		}
-	}
-	return $stringified;
+    my $stringified;
+    for my $arg (keys $epochs->%*) {
+        for my $type (keys $epochs->{$arg}->%*) {
+            for my $conv (keys $epochs->{$arg}{$type}->%*) {
+                my $s = $epochs->{$arg}{$type}{$conv}->to_string;
+                next if $s lt $opt{min_date} or $s gt $opt{max_date};
+                if ($flatten) {
+                    push @$stringified,
+                        "$epochs->{$arg}{$type}{$conv}\t($arg, $type, $conv)";
+                } else {
+                    $stringified->{$arg}{$type}{$conv} = $s;
+                }
+            }
+        }
+    }
+    return $stringified;
 }
 
 sub swap_endian ($bs) {
-	my $HB = qr{(?<hb>[0-9a-fA-F]{2})};
-	if ($bs =~ /^$HB$HB$HB$HB$HB?$HB?$HB?$HB?$/) {
-		no warnings 'uninitialized';
-		return join q{}, reverse $-{hb}->@*;
-	}
-	return;
+    my $HB = qr{(?<hb>[0-9a-fA-F]{2})};
+    if ($bs =~ /^$HB$HB$HB$HB$HB?$HB?$HB?$HB?$/) {
+        no warnings 'uninitialized';
+        return join q{}, reverse $-{hb}->@*;
+    }
+    return;
 }
 
 sub try_as ($arg, @convs) {
-	no strict 'refs';
-	my %h;
-	for my $conv (@convs) {
-		if (my $tm = $conv->($arg)) {
-			$h{$conv} = $tm;
-		}
-	}
-	return \%h;
+    no strict 'refs';
+    my %h;
+    for my $conv (@convs) {
+        if (my $tm = $conv->($arg)) {
+            $h{$conv} = $tm;
+        }
+    }
+    return \%h;
 }
 
 
