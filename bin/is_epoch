@@ -19,7 +19,7 @@ use Time::Moment::Epoch ':all';
 my %opt = (
     max_date => '9999-12-31T23:59:59Z',
     min_date => '0001-01-01T00:00:00Z',
-    output     => 'as_string',
+    output   => 'as_string',
 );
 
 GetOptions(

@@ -16,13 +16,13 @@ use Time::Moment::Epoch ':all';
 
 my %opt;
 GetOptions(
-	\%opt,
-	'conversion=s@',
-	'debug!',
-	'help|?',
-	'man',
-	'reverse',
-	'verbose!',
+    \%opt,
+    'conversion=s@',
+    'debug!',
+    'help|?',
+    'man',
+    'reverse',
+    'verbose!',
 ) or pod2usage(2);
 pod2usage(1) if $opt{help};
 pod2usage(-verbose => 2) if $opt{man};
@@ -36,11 +36,11 @@ for my $conv ($opt{conversion}->@*) {
 
 for my $arg (@ARGV) {
     for my $conv ($opt{conversion}->@*) {
-		no strict 'refs';
+        no strict 'refs';
 
         my $tm = $opt{reverse}
-			? "to_$conv"->($arg)
-			: $conv->($arg);
+            ? "to_$conv"->($arg)
+            : $conv->($arg);
 
         p $tm if $opt{debug};
 
