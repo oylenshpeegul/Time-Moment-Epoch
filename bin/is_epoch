@@ -12,6 +12,7 @@ use experimental 'signatures';
 use Data::Printer;
 use Getopt::Long;
 use JSON;
+use Encode::Base32::GMP;
 use Math::BigInt try => 'GMP';
 use Pod::Usage;
 use Time::Moment::Epoch ':all';
@@ -98,6 +99,21 @@ sub get_epochs (@args) {
 
     my %epochs;
     for my $arg (@args) {
+
+        # ULID strings are Base32-encoded (https://github.com/ulid/spec).
+        if ($arg =~ /^[0123456789ABCDEFGHJKMNPQRSTVWXYZ]{26}$/) {
+            my $decoded = decode_base32($arg);
+
+            # Decoded, it's our 128 bits. Our timestamp is the top 48
+            # bits of this, so shift right 80 bits.
+            Math::GMPz::Rmpz_div_2exp($decoded, $decoded, 80);
+
+            # The timestamp is Unix time in milliseconds, which we
+            # call Java time.
+            if (my $href = try_as($decoded, 'java')) {
+                $epochs{$arg}{ulid} = $href;
+            }
+        }
 
         # Full UUIDv1 string (with or without hyphens).
         if ($arg =~ /^$UUIDv1$/) {
