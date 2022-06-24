@@ -269,7 +269,7 @@ You can also ask for JSON output instead.
     $ is_epoch 1234567890 --min 2007 --max 2017 --output=as_json
     {"1234567890":{"decimal":{"dos":"2016-12-22T00:22:36Z","unix":"2009-02-13T23:31:30Z","google_calendar":"2007-03-16T23:31:30Z"}}}
 
-To make it more readable, just pipe it json_xs or jq whatever your
+To make it more readable, just pipe it json_xs or or jq whatever your
 favorite JSON prettifier is.
 
     $ is_epoch 1234567890 --min 2007 --max 2017 --output=as_json | json_xs
@@ -288,8 +288,25 @@ can also put a whole UUID in and it will grab the parts that make the
 date-time.
 
     $ is_epoch 33c41a44-6cea-11e7-907b-a6006ad3dba0
-    2017-07-20T01:24:40.472634Z    (33c41a44-6cea-11e7-907b-a6006ad3dba0, uuid_v1, uuid_v1)
+    2017-07-20T01:24:40.472634Z	(33c41a44-6cea-11e7-907b-a6006ad3dba0, uuid_v1, uuid_v1)
 
+That's a version 1 UUID. Now there are more UUIDs with timestamps in
+them (https://uuid6.github.io/uuid6-ietf-draft/).
+
+Version 6 UUIDs also contain a uuid_v1 timestamp, but the bits are in a different order
+
+    $ is_epoch 1e76cea3-3c41-6a44-907b-a6006ad3dba0
+    2017-07-20T01:24:40.472634Z	(1e76cea3-3c41-6a44-907b-a6006ad3dba0, uuid_v6, uuid_v1)
+
+Version 7 UUIDs contain a java timestamp (Unix time in milliseconds)
+
+    $ is_epoch 017F22E2-79B0-7CC3-98C4-DC0C0C07398F
+    2022-02-22T19:22:22Z	(017F22E2-79B0-7CC3-98C4-DC0C0C07398F, uuid_v7, java)
+
+ULIDs (https://github.com/ulid/spec) also have java timestamps in them
+
+    $ is_epoch 01FWHE4YDGFK1SHH6W1G60EECF
+    2022-02-22T19:22:22Z	(01FWHE4YDGFK1SHH6W1G60EECF, ulid, java)
 
 =head1 OPTIONS
 
